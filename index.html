@@ -282,6 +282,9 @@ const stockInfo = qty => {
 const calcSug  = (c,m)=>{const cv=parseFloat(c),mv=parseFloat(m);if(!cv||isNaN(cv)||isNaN(mv))return null;return(cv*(1+mv/100)).toFixed(2)};
 const calcMarg = (c,p)=>{const cv=parseFloat(c),pv=parseFloat(p);if(!cv||!pv||pv===0)return null;return(((pv-cv)/pv)*100).toFixed(1)};
 const calcMult = (c,p)=>{const cv=parseFloat(c),pv=parseFloat(p);if(!cv||!pv)return null;return(pv/cv).toFixed(2)};
+// Fasce di ricarico (ODS Ivano): prezzo_finale = costo*(1+molt), ivato = pf*1.1, asporto = pf*1.22
+const FASCE=[{max:10,molt:1.5,label:"fino a €10"},{max:20,molt:1.2,label:"€10–20"},{max:50,molt:1.0,label:"€20–50"},{max:Infinity,molt:0.5,label:"oltre €50"}];
+const calcFascia=c=>{const cv=parseFloat(c);if(!cv||cv<=0)return null;const f=FASCE.find(f=>cv<=f.max)||FASCE[FASCE.length-1];const pf=parseFloat((cv*(1+f.molt)).toFixed(2));const ivato=parseFloat((pf*1.1).toFixed(2));const asp=parseFloat((pf*1.22).toFixed(2));return{label:f.label,molt:f.molt,costo:cv,prezzoBase:pf,ivato,asporto:asp};};
 const saveLS   = (k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch{}};
 const loadLS   = k=>{try{const r=localStorage.getItem(k);return r?JSON.parse(r):null}catch{return null}};
 const todayStr = ()=>new Date().toLocaleDateString("it-IT",{day:"2-digit",month:"long",year:"numeric"});
@@ -546,7 +549,7 @@ function App() {
                 </div>
               </div>
               <div className="a-tabs">
-                {[["lista","📋 Lista"],["scorte","📦 Scorte"],["io","💾 Backup"]].map(([id,lbl])=>(
+                {[["lista","📋 Lista"],["scorte","📦 Scorte"],["valorizz","📊 Valorizzazione"],["io","💾 Backup"]].map(([id,lbl])=>(
                   <button key={id} className={`a-tab${tab===id?" active":""}`} onClick={()=>setTab(id)}>{lbl}</button>
                 ))}
               </div>
@@ -594,6 +597,41 @@ function App() {
                 </div>
               )}
 
+              {tab==="valorizz"&&(()=>{
+                const tracked=wines.filter(w=>w.stock!=null&&w.costPrice!=null);
+                const totCosto=tracked.reduce((s,w)=>s+(w.costPrice*(parseInt(w.stock)||0)),0);
+                const totVendita=tracked.reduce((s,w)=>s+(w.price*(parseInt(w.stock)||0)),0);
+                const totBottiglie=tracked.reduce((s,w)=>s+(parseInt(w.stock)||0),0);
+                return(
+                  <div className="a-body">
+                    <div className="a-stats" style={{marginBottom:24}}>
+                      {[[tracked.length,"Etichette tracciate"],[totBottiglie,"Bottiglie totali"],["€"+totCosto.toFixed(0),"Valore a costo"],["€"+totVendita.toFixed(0),"Valore a listino"]].map(([v,l])=>(
+                        <div key={l} className="a-stat"><div className="a-stat-v">{v}</div><div className="a-stat-l">{l}</div></div>
+                      ))}
+                    </div>
+                    <table className="sc-t">
+                      <thead><tr><th>Produttore · Vino</th><th>Btg</th><th>Costo unit.</th><th>Listino</th><th>Val. costo</th><th>Val. listino</th><th>Fascia</th></tr></thead>
+                      <tbody>
+                        {tracked.sort((a,b)=>(b.costPrice*(parseInt(b.stock)||0))-(a.costPrice*(parseInt(a.stock)||0))).map(w=>{
+                          const fc=calcFascia(w.costPrice);
+                          return(
+                            <tr key={w.id}>
+                              <td><div style={{fontFamily:"'Cormorant Garamond',serif",fontSize:15,fontWeight:600}}>{w.producer}</div><div style={{fontSize:10,color:"var(--taupe)",fontStyle:"italic"}}>{w.name}</div></td>
+                              <td>{w.stock}</td>
+                              <td>€{w.costPrice}</td>
+                              <td>€{w.price}</td>
+                              <td style={{fontWeight:600}}>€{(w.costPrice*(parseInt(w.stock)||0)).toFixed(0)}</td>
+                              <td style={{fontWeight:600,color:"var(--accent)"}}>€{(w.price*(parseInt(w.stock)||0)).toFixed(0)}</td>
+                              <td style={{fontSize:9,color:"var(--taupe)"}}>{fc?fc.label:"—"}</td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                );
+              })()}
+
               {tab==="io"&&(
                 <div className="io">
                   <h3>Esporta backup</h3>
@@ -640,22 +678,21 @@ function App() {
                   <span className="f-sec">Prezzi & Ricarico</span>
                   <div className="f-grid">
                     <div className="f-col"><label className="f-lbl">Prezzo d'acquisto (€)</label><input className="f-inp" type="number" min="0" step="0.01" value={form.costPrice} onChange={e=>sf("costPrice",e.target.value)} placeholder="es. 12.50"/></div>
-                    <div className="f-col">
-                      <label className="f-lbl">Ricarico (%)</label>
-                      <input className="f-inp" type="number" min="0" step="5" value={form.markup} onChange={e=>sf("markup",e.target.value)} placeholder="es. 200"/>
-                      <div className="mk-pre-row">{PRESETS.map(p=><button key={p.v} className="mk-pre" onClick={()=>sf("markup",String(p.v))}>{p.l}</button>)}</div>
-                    </div>
-                    {form.costPrice&&(
+                    {form.costPrice&&(()=>{const fc=calcFascia(form.costPrice);return fc?(
                       <div className="f-col s2">
                         <div className="mk-card">
+                          <div style={{fontSize:9,fontWeight:600,letterSpacing:".12em",textTransform:"uppercase",color:"var(--taupe)",marginBottom:8}}>Fascia: {fc.label} — ricarico ×{fc.molt} + IVA 10%</div>
                           <div className="mk-row">
-                            <div className="mk-it"><span className="mk-lbl">Prezzo suggerito</span><span className="mk-big">{sug?`€${sug}`:"—"}</span>{sug&&<button className="mk-apply" onClick={()=>sf("price",sug)}>→ Applica come bottiglia</button>}</div>
-                            {sug&&<><div className="mk-sep"/><div className="mk-it"><span className="mk-lbl">Costo</span><span className="mk-val">€{parseFloat(form.costPrice).toFixed(2)}</span></div><div className="mk-sep"/><div className="mk-it"><span className="mk-lbl">Margine</span><span className="mk-chip">{calcMarg(form.costPrice,sug)}%</span></div><div className="mk-it"><span className="mk-lbl">Molt.</span><span className="mk-chip">×{calcMult(form.costPrice,sug)}</span></div></>}
+                            <div className="mk-it"><span className="mk-lbl">Bottiglia ivata</span><span className="mk-big">€{fc.ivato}</span><button className="mk-apply" onClick={()=>sf("price",String(fc.ivato))}>→ Applica bottiglia</button></div>
+                            <div className="mk-sep"/>
+                            <div className="mk-it"><span className="mk-lbl">Base (ex IVA)</span><span className="mk-val">€{fc.prezzoBase}</span></div>
+                            <div className="mk-sep"/>
+                            <div className="mk-it"><span className="mk-lbl">Asporto (+22%)</span><span className="mk-val">€{fc.asporto}</span><button className="mk-apply" onClick={()=>sf("priceAsporto",String(fc.asporto))}>→ Applica asporto</button></div>
                           </div>
                         </div>
                       </div>
-                    )}
-                    <div className="f-col"><label className="f-lbl">Prezzo bottiglia (€) *</label><input className="f-inp" type="number" min="0" step="0.5" value={form.price} onChange={e=>sf("price",e.target.value)} placeholder="es. 38"/>{form.costPrice&&form.price&&<span className="f-hint">Margine: <strong>{marg}%</strong> · ×<strong>{mult}</strong></span>}</div>
+                    ):null;})()}
+                    <div className="f-col"><label className="f-lbl">Prezzo bottiglia (€) *</label><input className="f-inp" type="number" min="0" step="0.5" value={form.price} onChange={e=>sf("price",e.target.value)} placeholder="es. 38"/>{form.costPrice&&form.price&&<span className="f-hint">Margine: <strong>{calcMarg(form.costPrice,form.price)}%</strong> · ×<strong>{calcMult(form.costPrice,form.price)}</strong></span>}</div>
                     <div className="f-col"><label className="f-lbl">Al calice (€)</label><input className="f-inp" type="number" min="0" step="0.5" value={form.priceByGlass} onChange={e=>sf("priceByGlass",e.target.value)} placeholder="vuoto = non disp."/></div>
                     <div className="f-col"><label className="f-lbl">Asporto (€)</label><input className="f-inp" type="number" min="0" step="0.5" value={form.priceAsporto} onChange={e=>sf("priceAsporto",e.target.value)} placeholder="es. 32"/></div>
                   </div>
