@@ -327,6 +327,7 @@ function App() {
   const [importErr,setImportErr] = useState("");
   const notifT = useRef(null);
   const fileRef = useRef(null);
+  const xlsxRef = useRef(null);
 
   useEffect(()=>{const s=loadLS(CFG.STORAGE_KEY);setWines(s||SAMPLE);if(!s)saveLS(CFG.STORAGE_KEY,SAMPLE);setLoading(false);},[]);
 
@@ -358,6 +359,59 @@ function App() {
     catch{setImportErr("File non valido.");}
   };
   const handleFile=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>doImport(ev.target.result);r.readAsText(f);e.target.value="";};
+  const XLSX_MAP={"nome":"name","nome *":"name","produttore":"producer","categoria":"category","categoria *":"category","regione":"region","annata":"vintage","uve":"grapes","note degustazione":"notes","prezzo acquisto":"costPrice","prezzo bottiglia":"price","prezzo bottiglia *":"price","prezzo calice":"priceByGlass","prezzo asporto":"priceAsporto","stock":"stock"};
+  const CAT_NORM={"bianco":"Bianco","bianchi":"Bianco","rosso":"Rosso","rossi":"Rosso","rosato":"Rosato","rosati":"Rosato","rose":"Rosato","bollicine":"Bollicine","spumante":"Bollicine","champagne":"Champagne","naturale":"Naturale","naturali":"Naturale","dolce":"Dolce","dolci":"Dolce","passito":"Dolce"};
+  const doImportXlsx=file=>{
+    const reader=new FileReader();
+    reader.onload=e=>{
+      try{
+        const wb=XLSX.read(e.target.result,{type:"array"});
+        const ws=wb.Sheets[wb.SheetNames[0]];
+        const aoa=XLSX.utils.sheet_to_json(ws,{header:1,defval:""});
+        let hdrRow=-1;
+        for(let i=0;i<Math.min(aoa.length,10);i++){
+          const row=aoa[i].map(c=>String(c).toLowerCase().trim());
+          if(row.indexOf("nome")!==-1||row.indexOf("nome *")!==-1){hdrRow=i;break;}
+        }
+        if(hdrRow===-1)throw new Error("Intestazioni non trovate.");
+        const headers=aoa[hdrRow].map(c=>String(c).toLowerCase().trim());
+        const nameIdx=headers.indexOf("nome *")!==-1?headers.indexOf("nome *"):headers.indexOf("nome");
+        const result=[];
+        for(let i=hdrRow+1;i<aoa.length;i++){
+          const row=aoa[i];
+          const nameVal=nameIdx>=0?String(row[nameIdx]||"").trim():"";
+          if(!nameVal||nameVal.toUpperCase().indexOf("ESEMPIO")===0)continue;
+          const w={id:Date.now()+i};
+          headers.forEach((h,ci)=>{
+            const field=XLSX_MAP[h];if(!field)return;
+            let val=row[ci];if(val==null||val===""){w[field]=null;return;}
+            val=String(val).trim();
+            if(["costPrice","price","priceByGlass","priceAsporto"].indexOf(field)!==-1){const n=parseFloat(val.replace(",","."));w[field]=isNaN(n)?null:n;}
+            else if(field==="stock"){const n=parseInt(val);w[field]=isNaN(n)?null:n;}
+            else if(field==="category"){const k=val.toLowerCase().trim();w[field]=CAT_NORM[k]||"Bianco";}
+            else{w[field]=val;}
+          });
+          if(!w.name||!w.price)continue;
+          w.visible=true;w.isNaturale=!!w.isNaturale;w.isBiologico=!!w.isBiologico;w.isBiodinamico=!!w.isBiodinamico;w.so2=!!w.so2;
+          result.push(w);
+        }
+        if(result.length===0)throw new Error("Nessun vino trovato.");
+        if(!window.confirm(`Importare ${result.length} vini? I dati attuali verranno sostituiti.`))return;
+        persist(result);setImportErr("");toast(`✓ ${result.length} vini importati da Excel`);
+      }catch(err){setImportErr(err.message||"Errore nel file.");}
+    };
+    reader.readAsArrayBuffer(file);
+  };
+  const doDownloadTemplate=()=>{
+    const wb=XLSX.utils.book_new();
+    const headers=["nome *","produttore","categoria *","regione","annata","uve","note degustazione","prezzo acquisto","prezzo bottiglia *","prezzo calice","prezzo asporto","stock"];
+    const hint=["Nome vino","Produttore","Bianchi/Rossi/Rosato/Bollicine/Champagne/Dolci","Regione","Anno","Uvaggio","Note","Costo","Prezzo vendita","Calice","Asporto","N. bottiglie"];
+    const ex=["Barolo DOCG","Giacomo Conterno","Rossi","Piemonte","2019","Nebbiolo 100%","Rubino granato",32,95,"","80",3];
+    const ws=XLSX.utils.aoa_to_sheet([headers,hint,ex]);
+    ws["!cols"]=[22,22,14,16,8,28,32,10,10,10,10,8].map(w=>({wch:w}));
+    XLSX.utils.book_append_sheet(wb,ws,"Vini");
+    XLSX.writeFile(wb,"ladogana_template_vini.xlsx");
+  };
 
   const EF={name:"",producer:"",category:"Bianco",vintage:"",region:"",grapes:"",notes:"",price:"",priceByGlass:"",priceAsporto:"",costPrice:"",markup:"200",stock:""};
   const [form,setForm]=useState(EF);
@@ -556,6 +610,16 @@ function App() {
                     <input ref={fileRef} type="file" accept=".json" style={{display:"none"}} onChange={handleFile}/>
                   </div>
                   {importErr&&<p className="io-err">{importErr}</p>}
+                  <hr className="io-sep"/>
+                  <h3>Importazione da Excel</h3>
+                  <p>Scarica il template, compilalo e ricaricalo qui. <strong>I dati attuali verranno sostituiti.</strong></p>
+                  <div className="io-btns">
+                    <button className="btn btn-p" onClick={doDownloadTemplate}>📥 Scarica template Excel</button>
+                  </div>
+                  <div className="drop-z" onClick={()=>xlsxRef.current?.click()} onDragOver={e=>e.preventDefault()} onDrop={e=>{e.preventDefault();const f=e.dataTransfer.files[0];if(f)doImportXlsx(f);}}>
+                    <p>📊 <strong>Clicca o trascina</strong> il file Excel (.xlsx)</p>
+                    <input ref={xlsxRef} type="file" accept=".xlsx,.xls" style={{display:"none"}} onChange={e=>{const f=e.target.files[0];if(f)doImportXlsx(f);e.target.value="";}}/>
+                  </div>
                 </div>
               )}
             </>):(
