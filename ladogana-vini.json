@@ -1304,7 +1304,7 @@
   },
   {
     "id": 1773148956945,
-    "name": "Bourgogne aligotè \"les Valendons\"",
+    "name": "Bourgogne Aligotè \"les Valendons\"",
     "producer": "Domaine Uliz antoine Petiprez",
     "category": "Bianco",
     "region": "Borgogna",
@@ -1320,7 +1320,9 @@
     "isNaturale": false,
     "isBiologico": false,
     "isBiodinamico": false,
-    "so2": false
+    "so2": false,
+    "markup": 200,
+    "showGlass": true
   },
   {
     "id": 1773148956946,
