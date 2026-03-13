@@ -306,10 +306,9 @@ const ghToken = ()=>localStorage.getItem("ladogana_gh_token")||"";
 const ghHdrs = ()=>({"Authorization":`Bearer ${ghToken()}`,"Accept":"application/vnd.github+json","X-GitHub-Api-Version":"2022-11-28","Content-Type":"application/json"});
 let _ghSha = null;
 const ghLoad = async()=>{
-  const r=await fetch(GH_API+`?t=${Date.now()}`,{cache:"no-store",headers:ghHdrs()});
+  // lettura senza token — repo pubblico
+  const r=await fetch(GH_API+`?t=${Date.now()}`,{cache:"no-store"});
   if(r.status===404)return null;
-  if(r.status===401)throw new Error("Token non valido (401)");
-  if(r.status===403)throw new Error("Accesso negato (403)");
   if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e.message||"GH "+r.status);}
   const d=await r.json();_ghSha=d.sha;
   return JSON.parse(atob(d.content.replace(/\n/g,"")));
