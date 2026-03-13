@@ -256,7 +256,6 @@ const CFG = {
   PROD_KEY:      "ladogana_producers_v1",
   LOG_KEY:       "ladogana_log_v1",
   LOGO_URL:      "https://usercontent.one/wp/www.ladogana-lignano.it/wp-content/uploads/2023/02/Logo_LaDogana_black-1.png",
-  GH_TOKEN:  "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",
   GH_OWNER:  "ivman45",
   GH_REPO:   "vinidogana",
   GH_FILE:   "ladogana-vini.json",
@@ -303,7 +302,8 @@ const saveLS   = (k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch{}};
 const loadLS   = k=>{try{const r=localStorage.getItem(k);return r?JSON.parse(r):null}catch{return null}};
 
 const GH_API = `https://api.github.com/repos/${CFG.GH_OWNER}/${CFG.GH_REPO}/contents/${CFG.GH_FILE}`;
-const ghHdrs = ()=>({"Authorization":`Bearer ${CFG.GH_TOKEN}`,"Accept":"application/vnd.github+json","X-GitHub-Api-Version":"2022-11-28","Content-Type":"application/json"});
+const ghToken = ()=>localStorage.getItem("ladogana_gh_token")||"";
+const ghHdrs = ()=>({"Authorization":`Bearer ${ghToken()}`,"Accept":"application/vnd.github+json","X-GitHub-Api-Version":"2022-11-28","Content-Type":"application/json"});
 let _ghSha = null;
 const ghLoad = async()=>{
   const r=await fetch(GH_API+`?t=${Date.now()}`,{cache:"no-store",headers:ghHdrs()});
@@ -1091,6 +1091,12 @@ ${sections}
 
               {tab==="io"&&(
                 <div className="io">
+                  <h3>GitHub Token</h3>
+                  <p>Inseriscilo una volta — viene salvato su questo dispositivo e non serve più modificare il file.</p>
+                  <div style={{display:"flex",gap:8,alignItems:"center",margin:"10px 0 20px"}}>
+                    <input type="password" className="f-inp" style={{flex:1,fontFamily:"monospace",fontSize:12}} placeholder="github_pat_…" defaultValue={localStorage.getItem("ladogana_gh_token")||""} id="gh-token-input"/>
+                    <button className="btn btn-p" onClick={()=>{const v=document.getElementById("gh-token-input").value.trim();if(!v){toast("⚠ Token vuoto");return;}localStorage.setItem("ladogana_gh_token",v);toast("✓ Token salvato");}}>Salva</button>
+                  </div>
                   <h3>Esporta backup</h3>
                   <p>Scarica tutti i vini in formato JSON. Usalo come backup o per trasferire i dati.</p>
                   <div className="io-btns">
