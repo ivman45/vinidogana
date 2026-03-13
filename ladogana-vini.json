@@ -6149,7 +6149,7 @@
     "category": "Bianco",
     "region": "Alsazia",
     "vintage": "2019",
-    "grapes": "Pinot Bianco, Auxerrois",
+    "grapes": "Pinot Auxerrois",
     "notes": null,
     "costPrice": 11.95,
     "price": 29,
@@ -6160,7 +6160,9 @@
     "isNaturale": false,
     "isBiologico": false,
     "isBiodinamico": false,
-    "so2": false
+    "so2": false,
+    "markup": 200,
+    "showGlass": true
   },
   {
     "id": 1773148957189,
