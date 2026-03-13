@@ -321,6 +321,23 @@ const ghLoad = async()=>{
   const text=new TextDecoder("utf-8").decode(bytes);
   return JSON.parse(text);
 };
+const fixMojibake = str => {
+  if (!str || typeof str !== 'string') return str;
+  if (!/[\xC0-\xFF]/.test(str)) return str;
+  try {
+    const bytes = new Uint8Array(str.length);
+    for (let i = 0; i < str.length; i++) bytes[i] = str.charCodeAt(i) & 0xFF;
+    const fixed = new TextDecoder('utf-8').decode(bytes);
+    if (fixed.includes('\uFFFD')) return str;
+    return fixed;
+  } catch { return str; }
+};
+const fixWineEncoding = w => {
+  const fields = ['name','producer','region','grapes','notes','country'];
+  const out = {...w};
+  fields.forEach(f => { if(out[f]) out[f] = fixMojibake(out[f]); });
+  return out;
+};
 const toBase64 = str => new Promise(resolve=>{
   const blob = new Blob([str],{type:"text/plain;charset=utf-8"});
   const reader = new FileReader();
@@ -424,6 +441,32 @@ function App() {
   const [loading,setLoading]     = useState(true);
   const [activeCat,setActiveCat] = useState("all");
   const [showMescita,setShowMescita] = useState(false);
+  const [lang,setLang] = useState('it');
+  const T = {
+    it:{
+      cats:{Bianco:"Bianchi",Bollicine:"Bollicine",Rosato:"Rosati",Rosso:"Rossi",Dolce:"Dolci"},
+      mescita:"◈ Mescita", searchPh:"Cerca vino, produttore…",
+      allZone:"Tutte le zone", allAnnate:"Tutte le annate", allVitigni:"Tutti i vitigni",
+      mescitaEmpty:"Nessun vino disponibile al calice al momento.",
+      glass:"calice", toGo:"asporto", byGlass:"al calice",
+      vintage:"Annata", region:"Regione", grapes:"Uve",
+      tastingNotes:"Note di degustazione", producer:"Il Produttore",
+      takeaway:"Asporto", noResults:"Nessun risultato", trySearch:"Prova a modificare la ricerca",
+      labels:(n)=>`${n} etichett${n===1?"a":"e"}`, wineCount:(n)=>`${n} etichett${n===1?"a":"e"}`
+    },
+    en:{
+      cats:{Bianco:"Whites",Bollicine:"Sparkling",Rosato:"Rosé",Rosso:"Reds",Dolce:"Sweet"},
+      mescita:"◈ By the Glass", searchPh:"Search wine, producer…",
+      allZone:"All regions", allAnnate:"All vintages", allVitigni:"All grapes",
+      mescitaEmpty:"No wines available by the glass at the moment.",
+      glass:"glass", toGo:"to go", byGlass:"by the glass",
+      vintage:"Vintage", region:"Region", grapes:"Grapes",
+      tastingNotes:"Tasting notes", producer:"The Producer",
+      takeaway:"To go", noResults:"No results", trySearch:"Try changing your search",
+      labels:(n)=>`${n} wine${n===1?"":"s"}`, wineCount:(n)=>`${n} wine${n===1?"":"s"}`
+    }
+  };
+  const L = T[lang];
   const [search,setSearch]       = useState("");
   const [fRegion,setFRegion]     = useState("all");
   const [fVintage,setFVintage]   = useState("all");
@@ -760,6 +803,7 @@ ${sections}
           </button>
           {syncSt==="ok"&&<span title="Sincronizzato" style={{fontSize:"13px",color:"#2e7d32",marginRight:2}}>✓</span>}
           <button className="btn btn-ico" title="Stampa" onClick={doPrint}>🖨</button>
+          <button className="btn" style={{fontSize:11,fontWeight:600,letterSpacing:".06em",padding:"4px 8px"}} onClick={()=>setLang(l=>l==="it"?"en":"it")}>{lang==="it"?"EN":"IT"}</button>
           <button className="btn" onClick={()=>{if(auth){setShowAdmin(true);setShowForm(false);setTab("lista");}else setShowLogin(true);}}>⚙</button>
         </div>
       </header>
@@ -771,48 +815,48 @@ ${sections}
             {i>0&&<div className="t-sep"/>}
             <button className={`cat-btn${activeCat===c.id?" active":""}`} onClick={()=>setActiveCat(c.id)}>
               {c.color&&<span className="cat-dot" style={{background:c.color}}/>}
-              {c.label}
+              {L.cats[c.id]||c.label}
             </button>
           </React.Fragment>
         ))}
         <div className="t-sep"/>
         <button className={`cat-btn-mescita${showMescita?" active":""}`} onClick={()=>{setShowMescita(m=>!m);if(!showMescita){setActiveCat("all");setSearch("");setFRegion("all");setFVintage("all");setFGrapes("all");}}}>
-          ◈ Mescita
+          ◈ {L.mescita.replace("◈ ","")}
         </button>
         <div className="srch">
           <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-          <input placeholder="Cerca vino, produttore…" value={search} onChange={e=>setSearch(e.target.value)}/>
+          <input placeholder={L.searchPh} value={search} onChange={e=>setSearch(e.target.value)}/>
         </div>
       </div>
 
       {/* FILTERBAR */}
       {!showMescita&&<div className="filterbar">
         <select className={`f-drop${fRegion!=="all"?" on":""}`} value={fRegion} onChange={e=>setFRegion(e.target.value)}>
-          <option value="all">Tutte le zone</option>
+          <option value="all">{L.allZone}</option>
           {regions.map(r=><option key={r} value={r}>{r}</option>)}
         </select>
         <select className={`f-drop${fVintage!=="all"?" on":""}`} value={fVintage} onChange={e=>setFVintage(e.target.value)}>
-          <option value="all">Tutte le annate</option>
+          <option value="all">{L.allAnnate}</option>
           {vintages.map(v=><option key={v} value={v}>{v}</option>)}
         </select>
         <select className={`f-drop${fGrapes!=="all"?" on":""}`} value={fGrapes} onChange={e=>setFGrapes(e.target.value)}>
-          <option value="all">Tutti i vitigni</option>
+          <option value="all">{L.allVitigni}</option>
           {grapesList.map(g=><option key={g} value={g}>{g}</option>)}
         </select>
         {filtersActive&&<button className="f-reset" onClick={resetFilters}>× Reset</button>}
-        <span className="f-count">{filtered.length} etichett{filtered.length===1?"a":"e"}</span>
+        <span className="f-count">{L.labels(filtered.length)}</span>
       </div>}
 
       {/* PAGE */}
       {showMescita?(
         mescitaWines.length===0
-          ?<div className="mescita-empty">Nessun vino disponibile al calice al momento.</div>
+          ?<div className="mescita-empty">{L.mescitaEmpty}</div>
           :<div className="mescita-grid">
             {mescitaWines.map(w=>(
               <div key={w.id} className="mescita-card" onClick={()=>setDetail(w)}>
                 <div className="mescita-prod">{w.producer}</div>
                 <div className="mescita-name">{w.name}{w.vintage?` · ${w.vintage}`:""}</div>
-                <div className="mescita-price">€ {w.priceByGlass} <span style={{fontSize:13,fontWeight:300,color:"var(--taupe)"}}>/ calice</span></div>
+                <div className="mescita-price">€ {w.priceByGlass} <span style={{fontSize:13,fontWeight:300,color:"var(--taupe)"}}>/ {L.glass}</span></div>
                 {w.grapes&&<div className="mescita-sub">{w.grapes}</div>}
               </div>
             ))}
@@ -821,26 +865,25 @@ ${sections}
       <div className="page">
         <div className="print-hdr">
           <span className="print-hdr-t">Carta dei Vini — La Dogana</span>
-          <span className="print-hdr-d">{todayStr()}</span>
         </div>
 
         {filtered.length===0 ? (
           <div className="empty">
             <div className="empty-ico">🍷</div>
-            <p className="empty-ttl">Nessun risultato</p>
-            <p style={{fontSize:13}}>Prova a modificare la ricerca</p>
+            <p className="empty-ttl">{L.noResults}</p>
+            <p style={{fontSize:13}}>{L.trySearch}</p>
           </div>
         ) : grouped.map(({region,wines:gw})=>(
           <div key={region} className="reg-sec">
             <div className="reg-head">
               <h2 className="reg-title">{region}</h2>
-              <span className="reg-count">{gw.length} {gw.length===1?"etichetta":"etichette"}</span>
+              <span className="reg-count">{L.wineCount(gw.length)}</span>
             </div>
             {(()=>{
               const rows=[];let lastCat=null;
               for(const w of gw){
-                if(activeCat==="all"&&w.category!==lastCat){lastCat=w.category;const cat=CATS.find(c=>c.id===w.category);rows.push(<div key={"sub-"+region+w.category} className="cat-sub"><div className="cat-sub-bar" style={{background:catColor(w.category)}}/><span className="cat-sub-lbl">{cat?cat.label:w.category}</span></div>);}
-                rows.push(<div key={w.id} className="wine-row" onClick={()=>setDetail(w)}><div className="wr-left"><span className="wr-prod">{w.producer}</span>{w.name&&<><span className="wr-sep">·</span><span className="wr-name">{w.name}</span></>}{w.vintage&&<><span className="wr-sep">·</span><span className="wr-vin">{w.vintage}</span></>}{w.grapes&&<><span className="wr-sep">·</span><span className="wr-grapes">{w.grapes}</span></>}</div><div className="wr-right"><span className="wp-main">€{w.price}</span>{w.priceAsporto&&<span className="wp-asp">asporto €{w.priceAsporto}</span>}{w.showGlass!==false&&w.priceByGlass&&<span className="wp-glass">calice €{w.priceByGlass}</span>}</div></div>);
+                if(activeCat==="all"&&w.category!==lastCat){lastCat=w.category;const cat=CATS.find(c=>c.id===w.category);rows.push(<div key={"sub-"+region+w.category} className="cat-sub"><div className="cat-sub-bar" style={{background:catColor(w.category)}}/><span className="cat-sub-lbl">{L.cats[w.category]||( cat?cat.label:w.category)}</span></div>);}
+                rows.push(<div key={w.id} className="wine-row" onClick={()=>setDetail(w)}><div className="wr-left"><span className="wr-prod">{w.producer}</span>{w.name&&<><span className="wr-sep">·</span><span className="wr-name">{w.name}</span></>}{w.vintage&&<><span className="wr-sep">·</span><span className="wr-vin">{w.vintage}</span></>}{w.grapes&&<><span className="wr-sep">·</span><span className="wr-grapes">{w.grapes}</span></>}</div><div className="wr-right"><span className="wp-main">€{w.price}</span>{w.priceAsporto&&<span className="wp-asp">{L.toGo} €{w.priceAsporto}</span>}{w.showGlass!==false&&w.priceByGlass&&<span className="wp-glass">{L.glass} €{w.priceByGlass}</span>}</div></div>);
               }
               return rows;
             })()}
@@ -862,14 +905,14 @@ ${sections}
             </div>
             <div className="d-body">
               <div className="d-specs">
-                {detail.vintage&&<div className="d-spec"><label>Annata</label><span>{detail.vintage}</span></div>}
-                {detail.region&&<div className="d-spec"><label>Regione</label><span>{detail.region}</span></div>}
-                {detail.grapes&&<div className="d-spec"><label>Uve</label><span>{detail.grapes}</span></div>}
+                {detail.vintage&&<div className="d-spec"><label>{L.vintage}</label><span>{detail.vintage}</span></div>}
+                {detail.region&&<div className="d-spec"><label>{L.region}</label><span>{detail.region}</span></div>}
+                {detail.grapes&&<div className="d-spec"><label>{L.grapes}</label><span>{detail.grapes}</span></div>}
               </div>
-              {detail.notes&&<><p className="d-notes-t">Note di degustazione</p><p className="d-notes">{detail.notes}</p></>}
+              {detail.notes&&<><p className="d-notes-t">{L.tastingNotes}</p><p className="d-notes">{detail.notes}</p></>}
               {(()=>{const p=producers.find(x=>x.name===detail.producer);return p&&p.bio?(
-                <div style={{marginTop:18,paddingTop:16,borderTop:"1px solid var(--beige)"}}>
-                  <p style={{fontSize:9,fontWeight:600,letterSpacing:".16em",textTransform:"uppercase",color:"var(--taupe)",marginBottom:6}}>Il Produttore</p>
+                <div style={{marginTop:18,paddingTop:16,borderTop:"1px solid var(--beige))"}}>
+                  <p style={{fontSize:9,fontWeight:600,letterSpacing:".16em",textTransform:"uppercase",color:"var(--taupe)",marginBottom:6}}>{L.producer}</p>
                   <p style={{fontSize:13,lineHeight:1.8,color:"var(--brown)"}}>{p.bio}</p>
                   {p.website&&<a href={p.website} target="_blank" rel="noreferrer" style={{fontSize:11,color:"var(--accent)",marginTop:6,display:"inline-block"}}>{p.website}</a>}
                 </div>
@@ -878,9 +921,9 @@ ${sections}
             <div className="d-ftr">
               <div>
                 <div className="d-price">€{detail.price}</div>
-                {detail.priceByGlass&&<div className="d-price-s">al calice €{detail.priceByGlass}</div>}
+                {detail.priceByGlass&&<div className="d-price-s">{L.byGlass} €{detail.priceByGlass}</div>}
               </div>
-              {detail.priceAsporto&&<div><div className="d-asp-l">Asporto</div><div className="d-asp-p">€{detail.priceAsporto}</div></div>}
+              {detail.priceAsporto&&<div><div className="d-asp-l">{L.takeaway}</div><div className="d-asp-p">€{detail.priceAsporto}</div></div>}
             </div>
           </div>
         </div>
@@ -1124,6 +1167,12 @@ ${sections}
                       setSyncSt("syncing");toast("↻ Pubblicazione in corso…");
                       ghSave(wines).then(()=>{setSyncSt("ok");toast("✓ Pubblicato su GitHub");}).catch(e=>{setSyncSt("err");toast("⚠ Errore: "+e.message);});
                     }}>☁ Pubblica su GitHub</button>
+                    <button className="btn btn-g" onClick={()=>{
+                      const fixed = wines.map(fixWineEncoding);
+                      setWines(fixed); saveLS(CFG.STORAGE_KEY, fixed);
+                      setSyncSt("syncing"); toast("↻ Riparo encoding e pubblico…");
+                      ghSave(fixed).then(()=>{setSyncSt("ok");toast("✓ Encoding riparato e pubblicato");}).catch(e=>{setSyncSt("err");toast("⚠ Errore: "+e.message);});
+                    }}>🔧 Ripara encoding</button>
                     <button className="btn btn-g" onClick={doPrint}>🖨 Stampa carta</button>
                   </div>
                   <hr className="io-sep"/>
