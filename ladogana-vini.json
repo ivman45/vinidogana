@@ -9510,7 +9510,8 @@
     "priceAsporto": null,
     "costPrice": 5000,
     "markup": 200,
-    "stock": null,
-    "id": 1773420865801
+    "stock": 1,
+    "id": 1773420865801,
+    "showGlass": true
   }
 ]
