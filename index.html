@@ -315,13 +315,21 @@ const ghLoad = async()=>{
   const d=await r.json();
   _ghSha=d.sha;
   const b64=d.content.replace(/\n/g,"");
-  const bytes=Uint8Array.from(atob(b64),c=>c.charCodeAt(0));
-  return JSON.parse(new TextDecoder().decode(bytes));
+  const binary=atob(b64);
+  const bytes=new Uint8Array(binary.length);
+  for(let i=0;i<binary.length;i++)bytes[i]=binary.charCodeAt(i);
+  const text=new TextDecoder("utf-8").decode(bytes);
+  return JSON.parse(text);
 };
+const toBase64 = str => new Promise(resolve=>{
+  const blob = new Blob([str],{type:"text/plain;charset=utf-8"});
+  const reader = new FileReader();
+  reader.onload = ()=>resolve(reader.result.split(",")[1]);
+  reader.readAsDataURL(blob);
+});
 const ghSave = async(data)=>{
-  const json=JSON.stringify(data);
-  const bytes=new TextEncoder().encode(json);
-  const b64=btoa(String.fromCharCode(...bytes));
+  const json=JSON.stringify(data,null,2);
+  const b64=await toBase64(json);
   const body={message:"aggiornamento carta vini",content:b64};
   if(_ghSha)body.sha=_ghSha;
   const r=await fetch(GH_API,{method:"PUT",headers:ghHdrs(),body:JSON.stringify(body)});
