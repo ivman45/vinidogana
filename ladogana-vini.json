@@ -7130,7 +7130,7 @@
   },
   {
     "id": 1773148957237,
-    "name": "Riesling loibenberg",
+    "name": "Riesling Loibenberg",
     "producer": "Alzinger",
     "category": "Bianco",
     "region": "Austria",
@@ -7146,7 +7146,9 @@
     "isNaturale": false,
     "isBiologico": false,
     "isBiodinamico": false,
-    "so2": false
+    "so2": false,
+    "markup": 200,
+    "showGlass": true
   },
   {
     "id": 1773148957238,
