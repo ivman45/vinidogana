@@ -47,6 +47,12 @@ input,select,textarea{border-radius:0;-webkit-appearance:none}
 
 /* TOOLBAR */
 .toolbar{background:#fff;border-bottom:1px solid var(--sand);padding:0 40px;display:flex;align-items:center;overflow-x:auto;scrollbar-width:none}
+.filterbar{background:#FAFAF8;border-bottom:1px solid var(--beige);padding:8px 40px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.f-drop{font-family:'DM Sans',sans-serif;font-size:11px;border:1px solid var(--sand);background:#fff;color:var(--dark);padding:5px 10px;outline:none;cursor:pointer;transition:border-color .12s}
+.f-drop:focus{border-color:var(--accent)}
+.f-drop.on{border-color:var(--accent);color:var(--accent);background:#fff5f5}
+.f-reset{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);background:none;border:none;cursor:pointer;padding:4px 6px;text-decoration:underline}
+.f-count{font-size:11px;color:var(--taupe);margin-left:auto}
 .toolbar::-webkit-scrollbar{display:none}
 .cat-btn{font-size:10px;font-weight:600;letter-spacing:.13em;text-transform:uppercase;padding:0 16px;height:44px;white-space:nowrap;border:none;background:transparent;color:var(--taupe);border-bottom:2px solid transparent;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:6px}
 .cat-btn:hover{color:var(--dark)}
@@ -75,15 +81,15 @@ input,select,textarea{border-radius:0;-webkit-appearance:none}
 .wine-row:hover{background:rgba(115,23,23,.03);margin:0 -14px;padding:11px 14px;border-bottom-color:transparent}
 .wine-row:last-child{border-bottom:none}
 .wr-left{display:flex;align-items:baseline;gap:8px;min-width:0;flex-wrap:wrap}
-.wr-prod{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;color:var(--dark);letter-spacing:.01em}
+.wr-prod{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:var(--dark);letter-spacing:.01em}
 .wr-sep{color:#C0B8B0;font-size:10px;flex-shrink:0}
-.wr-name{font-size:12px;color:#5A4E45;letter-spacing:.02em;font-weight:500}
-.wr-grapes{font-size:11px;color:#7A6A5E;font-style:italic}
+.wr-name{font-size:14px;color:#5A4E45;letter-spacing:.02em;font-weight:500}
+.wr-grapes{font-size:13px;color:#7A6A5E;font-style:italic}
 .wr-right{display:flex;align-items:baseline;gap:10px;flex-shrink:0;white-space:nowrap}
-.wp-main{font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:500;color:var(--dark)}
+.wp-main{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:500;color:var(--dark)}
 .wp-glass{font-size:11px;color:var(--taupe)}
 .wp-asp{font-size:10px;color:var(--taupe);letter-spacing:.02em}
-.wr-vin{font-family:'DM Sans',sans-serif;font-size:11px;color:var(--taupe);font-weight:300;letter-spacing:.04em}
+.wr-vin{font-family:'DM Sans',sans-serif;font-size:13px;color:var(--taupe);font-weight:400;letter-spacing:.03em}
 
 /* EMPTY */
 .empty{text-align:left;padding:80px 0;color:var(--taupe)}
@@ -232,6 +238,8 @@ const { useState, useEffect, useRef, useCallback, useMemo } = React;
 const CFG = {
   ADMIN_PASSWORD: "dogana2024",
   STORAGE_KEY:   "ladogana_v3",
+  PROD_KEY:      "ladogana_producers_v1",
+  LOG_KEY:       "ladogana_log_v1",
   LOGO_URL:      "https://usercontent.one/wp/www.ladogana-lignano.it/wp-content/uploads/2023/02/Logo_LaDogana_black-1.png",
 };
 
@@ -301,11 +309,70 @@ function LoginModal({onOk,onClose}) {
   );
 }
 
+
+function QRTavoloWidget() {
+  const [url,setUrl]     = React.useState(window.location.href.split("?")[0]);
+  const [tavolo,setTavolo] = React.useState("");
+  const [generated,setGenerated] = React.useState(false);
+  const qrRef = React.useRef(null);
+  const qrObj = React.useRef(null);
+
+  const fullUrl = tavolo ? url+"?t="+encodeURIComponent(tavolo) : url;
+
+  const generate = () => {
+    if(qrRef.current){qrRef.current.innerHTML="";}
+    if(qrObj.current){try{qrObj.current.clear();}catch(e){}}
+    try{
+      qrObj.current = new QRCode(qrRef.current,{text:fullUrl,width:300,height:300,colorDark:"#2C2420",colorLight:"#ffffff",correctLevel:QRCode.CorrectLevel.H});
+      setGenerated(true);
+    }catch(e){console.error(e);}
+  };
+
+  const download = () => {
+    if(!qrRef.current)return;
+    const canvas=qrRef.current.querySelector("canvas");
+    if(!canvas)return;
+    const c2=document.createElement("canvas");
+    c2.width=360;c2.height=440;
+    const ctx=c2.getContext("2d");
+    ctx.fillStyle="#fff";ctx.fillRect(0,0,360,440);
+    ctx.drawImage(canvas,30,30,300,300);
+    ctx.fillStyle="#2C2420";
+    ctx.font="bold 14px 'DM Sans',sans-serif";
+    ctx.textAlign="center";
+    if(tavolo){ctx.fillText("Tavolo "+tavolo,180,370);}
+    ctx.font="11px 'DM Sans',sans-serif";
+    ctx.fillStyle="#999085";
+    ctx.fillText("La Dogana — Carta dei Vini",180,395);
+    const a=document.createElement("a");
+    a.download="qr-tavolo"+(tavolo?"-"+tavolo:"")+".png";
+    a.href=c2.toDataURL("image/png");a.click();
+  };
+
+  return(
+    <div style={{marginTop:8}}>
+      <div className="f-grid" style={{marginBottom:12}}>
+        <div className="f-col"><label className="f-lbl">URL base</label><input className="f-inp" value={url} onChange={e=>setUrl(e.target.value)} placeholder="https://…"/></div>
+        <div className="f-col"><label className="f-lbl">Numero tavolo (opzionale)</label><input className="f-inp" value={tavolo} onChange={e=>setTavolo(e.target.value)} placeholder="es. 7"/></div>
+      </div>
+      <div style={{marginBottom:8,fontSize:11,color:"var(--taupe)"}}>URL: <strong style={{color:"var(--dark)"}}>{fullUrl}</strong></div>
+      <div style={{display:"flex",gap:8,marginBottom:16}}>
+        <button className="btn btn-p btn-sm" onClick={generate}>Genera QR</button>
+        {generated&&<button className="btn btn-sm" onClick={download}>⬇ Scarica PNG</button>}
+      </div>
+      <div ref={qrRef} style={{display:"inline-block"}}/>
+    </div>
+  );
+}
+
 function App() {
   const [wines,setWines]         = useState([]);
   const [loading,setLoading]     = useState(true);
   const [activeCat,setActiveCat] = useState("all");
   const [search,setSearch]       = useState("");
+  const [fRegion,setFRegion]     = useState("all");
+  const [fVintage,setFVintage]   = useState("all");
+  const [fGrapes,setFGrapes]     = useState("all");
   const [detail,setDetail]       = useState(null);
   const [showLogin,setShowLogin] = useState(false);
   const [auth,setAuth]           = useState(false);
@@ -315,20 +382,42 @@ function App() {
   const [showForm,setShowForm]   = useState(false);
   const [notif,setNotif]         = useState(null);
   const [importErr,setImportErr] = useState("");
+  const [producers,setProducers] = useState([]);
+  const [changelog,setChangelog] = useState([]);
+  const [prodForm,setProdForm]   = useState(null);    // null | {} editing producer
   const notifT = useRef(null);
   const fileRef = useRef(null);
   const xlsxRef = useRef(null);
+  const qrRef   = useRef(null);
 
-  useEffect(()=>{const s=loadLS(CFG.STORAGE_KEY);setWines(s||SAMPLE);if(!s)saveLS(CFG.STORAGE_KEY,SAMPLE);setLoading(false);},[]);
+  useEffect(()=>{
+    const s=loadLS(CFG.STORAGE_KEY);setWines(s||SAMPLE);if(!s)saveLS(CFG.STORAGE_KEY,SAMPLE);
+    const p=loadLS(CFG.PROD_KEY);setProducers(p||[]);
+    const l=loadLS(CFG.LOG_KEY);setChangelog(l||[]);
+    setLoading(false);
+  },[]);
 
   const persist = useCallback(list=>{setWines(list);saveLS(CFG.STORAGE_KEY,list);},[]);
+  const persistProds = useCallback(list=>{setProducers(list);saveLS(CFG.PROD_KEY,list);},[]);
+  const addLog = useCallback((action,name)=>{
+    const entry={ts:Date.now(),action,name};
+    setChangelog(prev=>{const next=[entry,...prev].slice(0,100);saveLS(CFG.LOG_KEY,next);return next;});
+  },[]);
   const toast   = msg=>{setNotif(msg);clearTimeout(notifT.current);notifT.current=setTimeout(()=>setNotif(null),2600);};
 
   const filtered = useMemo(()=>wines.filter(w=>{
     if(activeCat!=="all"&&w.category!==activeCat) return false;
+    if(fRegion!=="all"&&w.region!==fRegion) return false;
+    if(fVintage!=="all"&&w.vintage!==fVintage) return false;
+    if(fGrapes!=="all"&&!(w.grapes||"").toLowerCase().includes(fGrapes.toLowerCase())) return false;
     if(search&&!`${w.name} ${w.producer} ${w.grapes} ${w.region}`.toLowerCase().includes(search.toLowerCase())) return false;
     return true;
-  }),[wines,activeCat,search]);
+  }),[wines,activeCat,fRegion,fVintage,fGrapes,search]);
+  const regions  = useMemo(()=>[...new Set(wines.map(w=>w.region).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"it")),[wines]);
+  const vintages = useMemo(()=>[...new Set(wines.map(w=>w.vintage).filter(Boolean))].sort((a,b)=>b.localeCompare(a)),[wines]);
+  const grapesList = useMemo(()=>[...new Set(wines.map(w=>(w.grapes||"").split(/[,;/%]/)[0].replace(/\d+/g,"").trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"it")),[wines]);
+  const filtersActive = fRegion!=="all"||fVintage!=="all"||fGrapes!=="all"||search;
+  const resetFilters = ()=>{setFRegion("all");setFVintage("all");setFGrapes("all");setSearch("");};
 
   const CAT_ORDER = ["Bianco","Bollicine","Rosato","Rosso","Dolce"];
   const grouped = useMemo(()=>{
@@ -338,6 +427,160 @@ function App() {
   },[filtered,activeCat]);
 
   const updStock=(id,d)=>persist(wines.map(w=>w.id===id?{...w,stock:Math.max(0,(parseInt(w.stock)||0)+d)}:w));
+
+  const doPrint = () => {
+    const CAT_ORDER_P = ["Bianco","Bollicine","Rosato","Rosso","Dolce"];
+    const CAT_LABELS  = {"Bianco":"Bianchi","Bollicine":"Bollicine","Rosato":"Rosati","Rosso":"Rossi","Dolce":"Dolci"};
+
+    const grouped = {};
+    for(const cat of CAT_ORDER_P){
+      const ws = wines.filter(w=>w.category===cat).sort((a,b)=>(a.region||"").localeCompare(b.region||"","it")||a.name.localeCompare(b.name,"it"));
+      if(ws.length) grouped[cat]=ws;
+    }
+
+    const flagSym = w => {
+      const f=[];
+      if(w.isNaturale)    f.push('<span class="f-sym f-nat" title="Naturale">◉</span>');
+      if(w.isBiologico)   f.push('<span class="f-sym f-bio" title="Biologico">✿</span>');
+      if(w.isBiodinamico) f.push('<span class="f-sym f-biod" title="Biodinamico">☽</span>');
+      if(w.so2)           f.push('<span class="f-sym f-so2" title="Senza SO₂">⊘</span>');
+      return f.length ? `<span class="p-flags">${f.join("")}</span>` : "";
+    };
+
+    let sections = "";
+    let catList = [];
+    let pageEst = 2;
+    for(const cat of CAT_ORDER_P){
+      if(!grouped[cat]) continue;
+      const ws = grouped[cat];
+      const regions = [...new Set(ws.map(w=>w.region||""))].filter(Boolean);
+      const hasRegions = regions.length > 1;
+      catList.push({cat, label:CAT_LABELS[cat], page: pageEst, count:ws.length});
+      pageEst += Math.ceil(ws.length / 32) + 1;
+
+      let rows = "";
+      let lastRegion = null;
+      for(const w of ws){
+        if(hasRegions && w.region !== lastRegion){
+          lastRegion = w.region;
+          rows += `<tr class="region-row"><td colspan="3">${w.region||""}</td></tr>`;
+        }
+        const price = `€ ${w.price}`;
+        const glass = w.priceByGlass ? `<span class="sub-price"> calice € ${w.priceByGlass}</span>` : "";
+        const asp   = w.priceAsporto  ? `<span class="sub-price"> asp. € ${w.priceAsporto}</span>`  : "";
+        rows += `<tr class="wine-row-p">
+          <td class="wname">${w.name||""}${flagSym(w)}</td>
+          <td class="wprod">${[w.producer,w.grapes].filter(Boolean).join(" — ")}</td>
+          <td class="wright"><span class="wvint">${w.vintage||""}</span><span class="wprice">${price}</span>${glass}${asp}</td>
+        </tr>`;
+      }
+      sections += `
+        <section class="cat-section">
+          <h2 class="cat-head">${CAT_LABELS[cat]}</h2>
+          <table class="wine-table"><tbody>${rows}</tbody></table>
+        </section>`;
+    }
+
+    const today = new Date().toLocaleDateString("it-IT",{day:"2-digit",month:"long",year:"numeric"});
+    const indexRows = catList.map(c=>`
+      <tr class="idx-row">
+        <td class="idx-name">${c.label}</td>
+        <td class="idx-sep"></td>
+        <td class="idx-page">pag. ${c.page}</td>
+      </tr>`).join("");
+
+    const html = `<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8"/>
+<title>Carta dei Vini — La Dogana</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&display=swap" rel="stylesheet"/>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{--dark:#2C2416;--red:#731717;--brown:#7A5C3A;--beige:#F0EBE0;--cream:#FAF8F4;--taupe:#9C8E7A}
+  html,body{background:#fff;font-family:'Cormorant Garamond',serif;color:var(--dark);-webkit-print-color-adjust:exact;print-color-adjust:exact}
+
+  /* COVER */
+  .cover{width:210mm;height:297mm;display:flex;flex-direction:column;align-items:center;justify-content:center;page-break-after:always;background:var(--cream);position:relative}
+  .cover-rule{position:absolute;left:18mm;top:0;bottom:0;width:1px;background:var(--dark)}
+  .cover-top{position:absolute;top:22mm;left:0;right:0;text-align:center;font-size:8pt;letter-spacing:.35em;text-transform:uppercase;color:var(--taupe)}
+  .cover-title{font-size:52pt;font-weight:300;letter-spacing:.12em;text-transform:uppercase;line-height:1;color:var(--dark);text-align:center}
+  .cover-sub{margin-top:6mm;font-size:11pt;font-weight:300;font-style:italic;letter-spacing:.15em;color:var(--brown);text-align:center}
+  .cover-date{position:absolute;bottom:22mm;left:0;right:0;text-align:center;font-size:7.5pt;letter-spacing:.25em;color:var(--taupe);text-transform:uppercase}
+  .cover-line{width:40mm;height:1px;background:var(--dark);margin:8mm auto 0}
+
+  /* INDEX */
+  .index-page{width:210mm;min-height:297mm;page-break-after:always;padding:32mm 22mm 28mm;display:flex;flex-direction:column;justify-content:center}
+  .idx-title{font-size:8pt;letter-spacing:.35em;text-transform:uppercase;color:var(--taupe);margin-bottom:14mm}
+  .idx-table{width:100%;border-collapse:collapse}
+  .idx-row td{padding:5mm 0;border-bottom:1px solid var(--beige)}
+  .idx-row:last-child td{border-bottom:none}
+  .idx-name{font-size:17pt;font-weight:300;letter-spacing:.08em;color:var(--dark)}
+  .idx-sep{width:100%}
+  .idx-page{font-size:11pt;font-weight:400;color:var(--taupe);white-space:nowrap;padding-left:6mm;text-align:right;vertical-align:bottom}
+
+  /* SECTIONS */
+  .cat-section{page-break-before:always;padding:24mm 18mm 20mm}
+  .cat-head{font-size:8pt;letter-spacing:.4em;text-transform:uppercase;color:var(--dark);margin-bottom:8mm;padding-bottom:2.5mm;border-bottom:1px solid var(--dark)}
+
+  /* WINE TABLE */
+  .wine-table{width:100%;border-collapse:collapse}
+  .wine-row-p td{padding:3.2mm 0;border-bottom:1px solid #EDE8DF}
+  .wine-row-p:last-child td{border-bottom:none}
+  .wname{font-size:10.5pt;font-weight:400;color:var(--dark);width:44%;vertical-align:top;padding-right:4mm;line-height:1.3}
+  .wprod{font-size:8.5pt;font-weight:300;font-style:italic;color:var(--brown);width:36%;vertical-align:top;padding-right:4mm;line-height:1.3;padding-top:.5mm}
+  .wright{text-align:right;vertical-align:top;white-space:nowrap;padding-top:.5mm}
+  .wvint{font-size:8.5pt;font-weight:300;color:var(--taupe);margin-right:5mm}
+  .wprice{font-size:10.5pt;font-weight:500;color:var(--dark)}
+  .sub-price{font-size:7.5pt;font-weight:300;color:var(--taupe);display:block;text-align:right;margin-top:.5mm}
+  .region-row td{padding:7mm 0 2mm;font-size:7.5pt;letter-spacing:.3em;text-transform:uppercase;color:var(--taupe);border-bottom:none}
+
+  /* FLAGS */
+  .p-flags{margin-left:3mm;display:inline-flex;gap:2mm;vertical-align:middle}
+  .f-sym{font-size:8pt;line-height:1}
+  .f-nat{color:#2e7d32}.f-bio{color:#2e7d32}.f-biod{color:#7b1fa2}.f-so2{color:#c62828}
+
+  @page{size:A4 portrait;margin:0}
+  @media print{html,body{background:#fff}.cover{background:var(--cream)!important}}
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <div class="cover-rule"></div>
+  <div class="cover-top">Lignano Sabbiadoro</div>
+  <div class="cover-title">Carta<br>dei Vini</div>
+  <div class="cover-sub">La Dogana</div>
+  <div class="cover-line"></div>
+  <div class="cover-date">${today}</div>
+</div>
+
+<div class="index-page">
+  <div class="idx-title">Indice</div>
+  <table class="idx-table"><tbody>${indexRows}</tbody></table>
+</div>
+
+${sections}
+
+<div style="padding:12mm 18mm 20mm;border-top:1px solid var(--beige);margin-top:8mm">
+  <p style="font-size:7pt;letter-spacing:.25em;text-transform:uppercase;color:var(--taupe);margin-bottom:4mm">Legenda certificazioni</p>
+  <p style="font-size:8.5pt;font-weight:300;color:var(--brown);line-height:2">
+    <span style="color:#2e7d32;margin-right:2mm">◉</span> Vino Naturale &nbsp;&nbsp;
+    <span style="color:#2e7d32;margin-right:2mm">✿</span> Biologico certificato &nbsp;&nbsp;
+    <span style="color:#7b1fa2;margin-right:2mm">☽</span> Biodinamico (Demeter) &nbsp;&nbsp;
+    <span style="color:#c62828;margin-right:2mm">⊘</span> Senza solfiti aggiunti
+  </p>
+  <p style="font-size:7.5pt;font-weight:300;color:var(--taupe);margin-top:5mm;font-style:italic">I prezzi sono in euro, IVA inclusa. Disponibilità soggetta a variazioni.</p>
+</div>
+
+</body>
+</html>`;
+
+    const w = window.open("","_blank","width=900,height=1100");
+    w.document.write(html);
+    w.document.close();
+    w.onload = () => setTimeout(()=>w.print(), 400);
+  };
 
   const doExport=()=>{
     const b=new Blob([JSON.stringify(wines,null,2)],{type:"application/json"});
@@ -416,11 +659,11 @@ function App() {
     if(!form.name.trim()){toast("⚠ Inserisci il nome");return;}
     const w={...form,price:parseFloat(form.price)||0,priceByGlass:form.priceByGlass?parseFloat(form.priceByGlass):null,priceAsporto:form.priceAsporto?parseFloat(form.priceAsporto):null,costPrice:form.costPrice?parseFloat(form.costPrice):null,markup:form.markup?parseFloat(form.markup):null,stock:form.stock!==""?parseInt(form.stock):null};
     let upd;
-    if(editWine){upd=wines.map(x=>x.id===editWine.id?{...w,id:editWine.id}:x);toast("✓ Vino aggiornato");}
-    else{w.id=Date.now();upd=[...wines,w];toast("✓ Vino aggiunto");}
+    if(editWine){upd=wines.map(x=>x.id===editWine.id?{...w,id:editWine.id}:x);toast("✓ Vino aggiornato");addLog("modifica",w.producer+" — "+w.name);}
+    else{w.id=Date.now();upd=[...wines,w];toast("✓ Vino aggiunto");addLog("aggiunta",w.producer+" — "+w.name);}
     persist(upd);setShowForm(false);
   };
-  const delWine=id=>{if(!window.confirm("Eliminare questo vino?"))return;persist(wines.filter(w=>w.id!==id));toast("✓ Eliminato");};
+  const delWine=id=>{if(!window.confirm("Eliminare questo vino?"))return;const ww=wines.find(x=>x.id===id);persist(wines.filter(w=>w.id!==id));addLog("eliminazione",(ww?.producer||"")+" — "+(ww?.name||""));toast("✓ Eliminato");};
 
   if(loading) return <div style={{display:"flex",alignItems:"center",justifyContent:"center",height:"100vh",fontFamily:"'Cormorant Garamond',serif",fontSize:22,color:"var(--taupe)"}}>Caricamento…</div>;
 
@@ -435,7 +678,7 @@ function App() {
           }
         </div>
         <div className="hdr-right">
-          <button className="btn btn-ico" title="Stampa" onClick={()=>window.print()}>🖨</button>
+          <button className="btn btn-ico" title="Stampa" onClick={doPrint}>🖨</button>
           <button className="btn" onClick={()=>{if(auth){setShowAdmin(true);setShowForm(false);setTab("lista");}else setShowLogin(true);}}>⚙</button>
         </div>
       </header>
@@ -455,6 +698,25 @@ function App() {
           <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
           <input placeholder="Cerca vino, produttore…" value={search} onChange={e=>setSearch(e.target.value)}/>
         </div>
+
+      </div>
+
+      {/* FILTERBAR */}
+      <div className="filterbar">
+        <select className={`f-drop${fRegion!=="all"?" on":""}`} value={fRegion} onChange={e=>setFRegion(e.target.value)}>
+          <option value="all">Tutte le zone</option>
+          {regions.map(r=><option key={r} value={r}>{r}</option>)}
+        </select>
+        <select className={`f-drop${fVintage!=="all"?" on":""}`} value={fVintage} onChange={e=>setFVintage(e.target.value)}>
+          <option value="all">Tutte le annate</option>
+          {vintages.map(v=><option key={v} value={v}>{v}</option>)}
+        </select>
+        <select className={`f-drop${fGrapes!=="all"?" on":""}`} value={fGrapes} onChange={e=>setFGrapes(e.target.value)}>
+          <option value="all">Tutti i vitigni</option>
+          {grapesList.map(g=><option key={g} value={g}>{g}</option>)}
+        </select>
+        {filtersActive&&<button className="f-reset" onClick={resetFilters}>× Reset</button>}
+        <span className="f-count">{filtered.length} etichett{filtered.length===1?"a":"e"}</span>
       </div>
 
       {/* PAGE */}
@@ -480,7 +742,7 @@ function App() {
               const rows=[];let lastCat=null;
               for(const w of gw){
                 if(activeCat==="all"&&w.category!==lastCat){lastCat=w.category;const cat=CATS.find(c=>c.id===w.category);rows.push(<div key={"sub-"+region+w.category} className="cat-sub"><div className="cat-sub-bar" style={{background:catColor(w.category)}}/><span className="cat-sub-lbl">{cat?cat.label:w.category}</span></div>);}
-                rows.push(<div key={w.id} className="wine-row" onClick={()=>setDetail(w)}><div className="wr-left"><span className="wr-prod">{w.producer}</span>{w.name&&<><span className="wr-sep">·</span><span className="wr-name">{w.name}</span></>}{w.grapes&&<><span className="wr-sep">·</span><span className="wr-grapes">{w.grapes}</span></>}</div><div className="wr-right">{w.priceAsporto&&<span className="wp-asp">asporto €{w.priceAsporto}</span>}{w.priceByGlass&&<span className="wp-glass">calice €{w.priceByGlass}</span>}{w.vintage&&<span className="wr-vin">{w.vintage}</span>}<span className="wp-main">€{w.price}</span></div></div>);
+                rows.push(<div key={w.id} className="wine-row" onClick={()=>setDetail(w)}><div className="wr-left"><span className="wr-prod">{w.producer}</span>{w.name&&<><span className="wr-sep">·</span><span className="wr-name">{w.name}</span></>}{w.vintage&&<><span className="wr-sep">·</span><span className="wr-vin">{w.vintage}</span></>}{w.grapes&&<><span className="wr-sep">·</span><span className="wr-grapes">{w.grapes}</span></>}</div><div className="wr-right"><span className="wp-main">€{w.price}</span>{w.priceAsporto&&<span className="wp-asp">asporto €{w.priceAsporto}</span>}{w.priceByGlass&&<span className="wp-glass">calice €{w.priceByGlass}</span>}</div></div>);
               }
               return rows;
             })()}
@@ -506,6 +768,13 @@ function App() {
                 {detail.grapes&&<div className="d-spec"><label>Uve</label><span>{detail.grapes}</span></div>}
               </div>
               {detail.notes&&<><p className="d-notes-t">Note di degustazione</p><p className="d-notes">{detail.notes}</p></>}
+              {(()=>{const p=producers.find(x=>x.name===detail.producer);return p&&p.bio?(
+                <div style={{marginTop:18,paddingTop:16,borderTop:"1px solid var(--beige)"}}>
+                  <p style={{fontSize:9,fontWeight:600,letterSpacing:".16em",textTransform:"uppercase",color:"var(--taupe)",marginBottom:6}}>Il Produttore</p>
+                  <p style={{fontSize:13,lineHeight:1.8,color:"var(--brown)"}}>{p.bio}</p>
+                  {p.website&&<a href={p.website} target="_blank" rel="noreferrer" style={{fontSize:11,color:"var(--accent)",marginTop:6,display:"inline-block"}}>{p.website}</a>}
+                </div>
+              ):null;})()}
             </div>
             <div className="d-ftr">
               <div>
@@ -536,7 +805,7 @@ function App() {
                 </div>
               </div>
               <div className="a-tabs">
-                {[["lista","📋 Lista"],["scorte","📦 Scorte"],["valorizz","📊 Valorizzazione"],["io","💾 Backup"]].map(([id,lbl])=>(
+                {[["lista","📋 Lista"],["scorte","📦 Scorte"],["valorizz","📊 Valorizzazione"],["produttori","🏭 Produttori"],["stats","📈 Stats"],["log","🕐 Log"],["io","💾 Backup"]].map(([id,lbl])=>(
                   <button key={id} className={`a-tab${tab===id?" active":""}`} onClick={()=>setTab(id)}>{lbl}</button>
                 ))}
               </div>
@@ -619,13 +888,127 @@ function App() {
                 );
               })()}
 
+
+              {tab==="produttori"&&(
+                <div className="a-body">
+                  <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
+                    <span style={{fontSize:12,color:"var(--taupe)"}}>{producers.length} produttori registrati</span>
+                    <button className="btn btn-p btn-sm" onClick={()=>setProdForm({name:"",region:"",bio:"",website:""})}>+ Aggiungi produttore</button>
+                  </div>
+                  {prodForm&&(
+                    <div style={{background:"var(--beige)",padding:16,marginBottom:16}}>
+                      <div className="f-grid">
+                        <div className="f-col"><label className="f-lbl">Nome *</label><input className="f-inp" value={prodForm.name} onChange={e=>setProdForm(p=>({...p,name:e.target.value}))} placeholder="es. Radikon"/></div>
+                        <div className="f-col"><label className="f-lbl">Regione</label><input className="f-inp" value={prodForm.region} onChange={e=>setProdForm(p=>({...p,region:e.target.value}))} placeholder="es. Friuli"/></div>
+                        <div className="f-col s2"><label className="f-lbl">Filosofia / Bio</label><textarea className="f-txt" style={{minHeight:60}} value={prodForm.bio} onChange={e=>setProdForm(p=>({...p,bio:e.target.value}))} placeholder="Filosofia produttiva, stile, storia…"/></div>
+                        <div className="f-col s2"><label className="f-lbl">Sito web</label><input className="f-inp" value={prodForm.website} onChange={e=>setProdForm(p=>({...p,website:e.target.value}))} placeholder="https://…"/></div>
+                      </div>
+                      <div style={{display:"flex",gap:8,justifyContent:"flex-end",marginTop:12}}>
+                        <button className="btn btn-g btn-sm" onClick={()=>setProdForm(null)}>Annulla</button>
+                        <button className="btn btn-p btn-sm" onClick={()=>{
+                          if(!prodForm.name.trim())return;
+                          const existing=producers.find(p=>p.id===prodForm.id);
+                          let next;
+                          if(existing){next=producers.map(p=>p.id===prodForm.id?prodForm:p);}
+                          else{next=[...producers,{...prodForm,id:Date.now()}];}
+                          persistProds(next);setProdForm(null);toast("✓ Produttore salvato");
+                        }}>Salva</button>
+                      </div>
+                    </div>
+                  )}
+                  <table className="sc-t">
+                    <thead><tr><th>Produttore</th><th>Regione</th><th>Vini in carta</th><th></th></tr></thead>
+                    <tbody>
+                      {producers.length===0&&<tr><td colSpan={4} style={{color:"var(--taupe)",fontSize:12,paddingTop:24}}>Nessun produttore. Aggiungine uno.</td></tr>}
+                      {producers.map(p=>{
+                        const count=wines.filter(w=>w.producer===p.name).length;
+                        return(<tr key={p.id}>
+                          <td><div style={{fontFamily:"'Cormorant Garamond',serif",fontSize:15,fontWeight:600}}>{p.name}</div>{p.bio&&<div style={{fontSize:10,color:"var(--taupe)",marginTop:2,maxWidth:320,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{p.bio}</div>}</td>
+                          <td style={{fontSize:12}}>{p.region||"—"}</td>
+                          <td style={{fontFamily:"'Cormorant Garamond',serif",fontSize:18}}>{count}</td>
+                          <td><div className="a-acts"><button className="btn btn-sm" onClick={()=>setProdForm(p)}>✎</button><button className="btn btn-sm btn-d" onClick={()=>{if(!window.confirm("Eliminare?"))return;persistProds(producers.filter(x=>x.id!==p.id));toast("✓ Eliminato");}}>✕</button></div></td>
+                        </tr>);
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+
+              {tab==="stats"&&(()=>{
+                const withCost=wines.filter(w=>w.costPrice&&w.price);
+                const avgMargin=withCost.length?withCost.reduce((s,w)=>s+((w.price-w.costPrice)/w.price*100),0)/withCost.length:0;
+                const byCat=CATS.filter(c=>c.id!=="all").map(c=>{
+                  const cw=wines.filter(w=>w.category===c.id&&w.costPrice&&w.price);
+                  const avgM=cw.length?cw.reduce((s,w)=>s+((w.price-w.costPrice)/w.price*100),0)/cw.length:null;
+                  const val=wines.filter(w=>w.category===c.id&&w.costPrice&&w.stock).reduce((s,w)=>s+(w.costPrice*(parseInt(w.stock)||0)),0);
+                  return{...c,count:wines.filter(w=>w.category===c.id).length,avgM,val};
+                });
+                const topWines=[...withCost].sort((a,b)=>((b.price-b.costPrice)/b.price)-((a.price-a.costPrice)/a.price)).slice(0,10);
+                return(
+                  <div className="a-body">
+                    <div className="a-stats" style={{marginBottom:24}}>
+                      {[
+                        [wines.length,"Etichette totali"],
+                        [withCost.length,"Con costo tracciato"],
+                        [avgMargin.toFixed(1)+"%","Margine medio"],
+                        ["€"+wines.filter(w=>w.costPrice&&w.stock).reduce((s,w)=>s+(w.costPrice*(parseInt(w.stock)||0)),0).toFixed(0),"Valore magazzino a costo"]
+                      ].map(([v,l])=><div key={l} className="a-stat"><div className="a-stat-v">{v}</div><div className="a-stat-l">{l}</div></div>)}
+                    </div>
+                    <div style={{marginBottom:24}}>
+                      <p style={{fontSize:9,fontWeight:600,letterSpacing:".16em",textTransform:"uppercase",color:"var(--taupe)",marginBottom:10}}>Margine per categoria</p>
+                      <table className="sc-t">
+                        <thead><tr><th>Categoria</th><th>Etichette</th><th>Margine medio</th><th>Val. magaz.</th></tr></thead>
+                        <tbody>{byCat.map(c=><tr key={c.id}>
+                          <td><span style={{display:"inline-flex",alignItems:"center",gap:6}}><span style={{width:8,height:8,borderRadius:"50%",background:c.color,flexShrink:0,display:"inline-block"}}/>{c.label}</span></td>
+                          <td>{c.count}</td>
+                          <td style={{fontWeight:600,color:c.avgM>60?"#2e7d32":c.avgM>40?"var(--brown)":"#c62828"}}>{c.avgM?c.avgM.toFixed(1)+"%":"—"}</td>
+                          <td>€{c.val.toFixed(0)}</td>
+                        </tr>)}</tbody>
+                      </table>
+                    </div>
+                    <div>
+                      <p style={{fontSize:9,fontWeight:600,letterSpacing:".16em",textTransform:"uppercase",color:"var(--taupe)",marginBottom:10}}>Top 10 etichette per margine</p>
+                      <table className="sc-t">
+                        <thead><tr><th>Produttore · Vino</th><th>Costo</th><th>Prezzo</th><th>Margine</th></tr></thead>
+                        <tbody>{topWines.map(w=>{const m=((w.price-w.costPrice)/w.price*100);return(<tr key={w.id}>
+                          <td><div style={{fontFamily:"'Cormorant Garamond',serif",fontSize:15,fontWeight:600}}>{w.producer}</div><div style={{fontSize:10,color:"var(--taupe)"}}>{w.name}</div></td>
+                          <td>€{w.costPrice}</td><td>€{w.price}</td>
+                          <td style={{fontWeight:700,color:m>60?"#2e7d32":"var(--accent)"}}>{m.toFixed(1)}%</td>
+                        </tr>);})}</tbody>
+                      </table>
+                    </div>
+                  </div>
+                );
+              })()}
+
+              {tab==="log"&&(
+                <div className="a-body">
+                  <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
+                    <span style={{fontSize:12,color:"var(--taupe)"}}>{changelog.length} eventi registrati</span>
+                    <button className="btn btn-sm" onClick={()=>{if(!window.confirm("Cancellare il log?"))return;setChangelog([]);saveLS(CFG.LOG_KEY,[]);toast("Log cancellato");}}>🗑 Svuota log</button>
+                  </div>
+                  {changelog.length===0&&<p style={{color:"var(--taupe)",fontSize:12}}>Nessun evento registrato.</p>}
+                  <table className="sc-t">
+                    <thead><tr><th>Data / Ora</th><th>Azione</th><th>Vino</th></tr></thead>
+                    <tbody>{changelog.map((e,i)=>{
+                      const d=new Date(e.ts);
+                      const ds=d.toLocaleDateString("it-IT",{day:"2-digit",month:"2-digit",year:"numeric"})+" "+d.toLocaleTimeString("it-IT",{hour:"2-digit",minute:"2-digit"});
+                      const colors={aggiunta:"#2e7d32",modifica:"#e65100",eliminazione:"#c62828"};
+                      return(<tr key={i}><td style={{fontSize:11,color:"var(--taupe)",whiteSpace:"nowrap"}}>{ds}</td>
+                        <td><span style={{fontSize:9,fontWeight:600,padding:"2px 7px",background:colors[e.action]||"var(--beige)",color:"#fff",letterSpacing:".08em",textTransform:"uppercase"}}>{e.action}</span></td>
+                        <td style={{fontSize:12}}>{e.name}</td></tr>);
+                    })}</tbody>
+                  </table>
+                </div>
+              )}
+
               {tab==="io"&&(
                 <div className="io">
                   <h3>Esporta backup</h3>
                   <p>Scarica tutti i vini in formato JSON. Usalo come backup o per trasferire i dati.</p>
                   <div className="io-btns">
                     <button className="btn btn-p" onClick={doExport}>⬇ Scarica backup JSON</button>
-                    <button className="btn btn-g" onClick={()=>window.print()}>🖨 Stampa carta</button>
+                    <button className="btn btn-g" onClick={doPrint}>🖨 Stampa carta</button>
                   </div>
                   <hr className="io-sep"/>
                   <h3>Importa backup</h3>
@@ -645,6 +1028,10 @@ function App() {
                     <p>📊 <strong>Clicca o trascina</strong> il file Excel (.xlsx)</p>
                     <input ref={xlsxRef} type="file" accept=".xlsx,.xls" style={{display:"none"}} onChange={e=>{const f=e.target.files[0];if(f)doImportXlsx(f);e.target.value="";}}/>
                   </div>
+                  <hr className="io-sep"/>
+                  <h3>QR Code per tavolo</h3>
+                  <p>Genera un QR personalizzato con il numero tavolo. Lascia vuoto per il link generico.</p>
+                  <QRTavoloWidget/>
                 </div>
               )}
             </>):(
