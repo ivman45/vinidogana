@@ -5558,7 +5558,7 @@
   },
   {
     "id": 1773148957158,
-    "name": "Màcon-charney \"clos Saint Pierre\"",
+    "name": "Màcon-Charney \"Clos Saint Pierre\"",
     "producer": "Verget",
     "category": "Bianco",
     "region": "Borgogna",
@@ -5574,7 +5574,9 @@
     "isNaturale": false,
     "isBiologico": false,
     "isBiodinamico": false,
-    "so2": false
+    "so2": false,
+    "markup": 200,
+    "showGlass": true
   },
   {
     "id": 1773148957159,
