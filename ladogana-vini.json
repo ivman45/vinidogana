@@ -427,7 +427,7 @@
   {
     "id": 1773148956901,
     "name": "Asso",
-    "producer": "Tenute l'armonia lab",
+    "producer": "Tenute l'armonia Lab",
     "category": "Bianco",
     "region": "Veneto",
     "vintage": "2018",
@@ -442,7 +442,9 @@
     "isNaturale": false,
     "isBiologico": false,
     "isBiodinamico": false,
-    "so2": false
+    "so2": false,
+    "markup": 200,
+    "showGlass": true
   },
   {
     "id": 1773148956902,
