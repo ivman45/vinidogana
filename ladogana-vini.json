@@ -1036,13 +1036,15 @@
     "costPrice": 29.4,
     "price": 65,
     "priceByGlass": null,
-    "priceAsporto": 535,
+    "priceAsporto": 54,
     "stock": 2,
     "visible": true,
     "isNaturale": false,
     "isBiologico": false,
     "isBiodinamico": false,
-    "so2": false
+    "so2": false,
+    "markup": 200,
+    "showGlass": true
   },
   {
     "id": 1773148956932,
