@@ -7754,15 +7754,17 @@
     "grapes": "Cabernet Franc 100%",
     "notes": null,
     "costPrice": 23.4,
-    "price": 51,
+    "price": 52,
     "priceByGlass": null,
-    "priceAsporto": null,
+    "priceAsporto": 44,
     "stock": 3,
     "visible": true,
     "isNaturale": false,
     "isBiologico": false,
     "isBiodinamico": false,
-    "so2": false
+    "so2": false,
+    "markup": 200,
+    "showGlass": true
   },
   {
     "id": 1773148957267,
