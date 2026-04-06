@@ -427,7 +427,7 @@
   {
     "id": 1773148956901,
     "name": "Asso",
-    "producer": "Tenute l'armonia Lab",
+    "producer": "Tenute l'armonia lab",
     "category": "Bianco",
     "region": "Veneto",
     "vintage": "2018",
@@ -442,9 +442,7 @@
     "isNaturale": false,
     "isBiologico": false,
     "isBiodinamico": false,
-    "so2": false,
-    "markup": 200,
-    "showGlass": true
+    "so2": false
   },
   {
     "id": 1773148956902,
@@ -938,15 +936,13 @@
     "costPrice": 8.9,
     "price": 24,
     "priceByGlass": null,
-    "priceAsporto": 16,
+    "priceAsporto": 165,
     "stock": 2,
     "visible": true,
     "isNaturale": false,
     "isBiologico": false,
     "isBiodinamico": false,
-    "so2": false,
-    "markup": 200,
-    "showGlass": true
+    "so2": false
   },
   {
     "id": 1773148956927,
@@ -9584,7 +9580,7 @@
     "category": "Champagne",
     "vintage": "SA",
     "region": "Champagne",
-    "grapes": "cHARDONNAY",
+    "grapes": "Chardonnay",
     "notes": "",
     "price": 88,
     "priceByGlass": null,
