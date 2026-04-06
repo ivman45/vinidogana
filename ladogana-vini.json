@@ -2233,7 +2233,7 @@
   {
     "id": 1773148956991,
     "name": "Champagne Rosé Grand Cru Brut",
-    "producer": "Marie - Noëlle Ledru",
+    "producer": "Marie - Noëlle ledru",
     "category": "Champagne",
     "region": "Champagne",
     "vintage": null,
@@ -2248,9 +2248,7 @@
     "isNaturale": false,
     "isBiologico": false,
     "isBiodinamico": false,
-    "so2": false,
-    "markup": 200,
-    "showGlass": true
+    "so2": false
   },
   {
     "id": 1773148956992,
@@ -9167,7 +9165,7 @@
   {
     "id": 1773148957336,
     "name": "Vin de Comptoir",
-    "producer": "Charles Dufour",
+    "producer": "Charles dufour",
     "category": "Champagne",
     "region": "Champagne",
     "vintage": "2021",
@@ -9182,9 +9180,7 @@
     "isNaturale": false,
     "isBiologico": false,
     "isBiodinamico": false,
-    "so2": false,
-    "markup": 200,
-    "showGlass": true
+    "so2": false
   },
   {
     "id": 1773148957337,
