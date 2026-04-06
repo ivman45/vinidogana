@@ -5407,7 +5407,7 @@
   {
     "id": 1773148957150,
     "name": "Morgon",
-    "producer": "Marcelle Lapierre",
+    "producer": "Marcelle lapierre",
     "category": "Rosso",
     "region": "Beaujolais",
     "vintage": "2023",
@@ -5422,9 +5422,7 @@
     "isNaturale": false,
     "isBiologico": false,
     "isBiodinamico": false,
-    "so2": false,
-    "markup": 200,
-    "showGlass": true
+    "so2": false
   },
   {
     "id": 1773148957151,
