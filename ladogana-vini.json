@@ -9534,20 +9534,21 @@
     "id": 1775506579709
   },
   {
-    "name": "Blanc de blancs",
+    "name": "Blanc de Blancs",
     "producer": "Justin Maillard",
     "category": "Champagne",
     "vintage": "SA",
     "region": "Champagne",
     "grapes": "cHARDONNAY",
     "notes": "",
-    "price": 86.02,
+    "price": 88,
     "priceByGlass": null,
-    "priceAsporto": null,
+    "priceAsporto": 77,
     "costPrice": 39.1,
     "markup": 200,
     "stock": 6,
-    "id": 1775507761638
+    "id": 1775507761638,
+    "showGlass": true
   },
   {
     "name": "Millesime 2018",
