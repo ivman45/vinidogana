@@ -342,6 +342,7 @@ const toBase64 = str => new Promise(resolve=>{
   reader.readAsDataURL(blob);
 });
 const ghSave = async(data)=>{
+  if(!ghToken())throw new Error("Token GitHub mancante — inseriscilo in Admin → Backup → Token");
   const shaR=await fetch(GH_API,{headers:ghHdrs()});
   if(shaR.ok){const d=await shaR.json();_ghSha=d.sha;}
   const json=JSON.stringify(data,null,2);
