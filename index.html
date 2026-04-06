@@ -471,6 +471,8 @@ function App() {
   const [fRegion,setFRegion]     = useState("all");
   const [fVintage,setFVintage]   = useState("all");
   const [fGrapes,setFGrapes]     = useState("all");
+  const [fPriceBand,setFPriceBand] = useState("all");
+  const [fPriceMax,setFPriceMax]   = useState(500);
   const [detail,setDetail]       = useState(null);
   const [showLogin,setShowLogin] = useState(false);
   const [auth,setAuth]           = useState(false);
@@ -527,15 +529,18 @@ function App() {
     if(fRegion!=="all"&&w.region!==fRegion) return false;
     if(fVintage!=="all"&&w.vintage!==fVintage) return false;
     if(fGrapes!=="all"&&!(w.grapes||"").toLowerCase().includes(fGrapes.toLowerCase())) return false;
+    if(fPriceBand!=="all"){const p=w.price||0;if(fPriceBand==="0-20"&&p>20)return false;if(fPriceBand==="20-50"&&(p<20||p>50))return false;if(fPriceBand==="50-100"&&(p<50||p>100))return false;if(fPriceBand==="100+"&&p<100)return false;}
+    if(fPriceMax<500&&(w.price||0)>fPriceMax)return false;
     if(search&&!`${w.name} ${w.producer} ${w.grapes} ${w.region}`.toLowerCase().includes(search.toLowerCase())) return false;
     return true;
-  }),[wines,activeCat,fRegion,fVintage,fGrapes,search]);
+  }),[wines,activeCat,fRegion,fVintage,fGrapes,fPriceBand,fPriceMax,search]);
   const regions  = useMemo(()=>[...new Set(wines.map(w=>w.region).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"it")),[wines]);
   const vintages = useMemo(()=>[...new Set(wines.map(w=>w.vintage).filter(Boolean))].sort((a,b)=>b.localeCompare(a)),[wines]);
   const mescitaWines = useMemo(()=>wines.filter(w=>w.visible!==false&&w.showGlass!==false&&w.priceByGlass).sort((a,b)=>(a.category||"").localeCompare(b.category||"")||a.producer.localeCompare(b.producer,"it")),[wines]);
   const grapesList = useMemo(()=>[...new Set(wines.map(w=>(w.grapes||"").split(/[,;/%]/)[0].replace(/\d+/g,"").trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"it")),[wines]);
-  const filtersActive = fRegion!=="all"||fVintage!=="all"||fGrapes!=="all"||search;
-  const resetFilters = ()=>{setFRegion("all");setFVintage("all");setFGrapes("all");setSearch("");};
+  const maxPrice = useMemo(()=>Math.ceil(Math.max(...wines.map(w=>w.price||0),100)/50)*50,[wines]);
+  const filtersActive = fRegion!=="all"||fVintage!=="all"||fGrapes!=="all"||fPriceBand!=="all"||fPriceMax<500||search;
+  const resetFilters = ()=>{setFRegion("all");setFVintage("all");setFGrapes("all");setFPriceBand("all");setFPriceMax(500);setSearch("");};
 
   const CAT_ORDER = ["Champagne","Bollicine","Bianco","Rosso","Rosato","Dolce"];
   const grouped = useMemo(()=>{
@@ -840,6 +845,17 @@ ${sections}
           <option value="all">{L.allVitigni}</option>
           {grapesList.map(g=><option key={g} value={g}>{g}</option>)}
         </select>
+        <select className={`f-drop${fPriceBand!=="all"?" on":""}`} value={fPriceBand} onChange={e=>setFPriceBand(e.target.value)}>
+          <option value="all">Tutti i prezzi</option>
+          <option value="0-20">Fino a €20</option>
+          <option value="20-50">€20 – €50</option>
+          <option value="50-100">€50 – €100</option>
+          <option value="100+">Oltre €100</option>
+        </select>
+        <div style={{display:"flex",alignItems:"center",gap:6,fontSize:11,color:"var(--taupe)"}}>
+          <span style={{whiteSpace:"nowrap"}}>Max €{fPriceMax<500?fPriceMax:"∞"}</span>
+          <input type="range" min={0} max={maxPrice} step={5} value={fPriceMax} onChange={e=>setFPriceMax(Number(e.target.value))} style={{width:90,accentColor:"var(--accent)"}}/>
+        </div>
         {filtersActive&&<button className="f-reset" onClick={resetFilters}>× Reset</button>}
         <span className="f-count">{L.labels(filtered.length)}</span>
       </div>}
