@@ -852,9 +852,9 @@ ${sections}
           <option value="50-100">€50 – €100</option>
           <option value="100+">Oltre €100</option>
         </select>
-        <div style={{display:"flex",alignItems:"center",gap:6,fontSize:11,color:"var(--taupe)"}}>
-          <span style={{whiteSpace:"nowrap"}}>Max €{fPriceMax<500?fPriceMax:"∞"}</span>
-          <input type="range" min={0} max={maxPrice} step={5} value={fPriceMax} onChange={e=>setFPriceMax(Number(e.target.value))} style={{width:90,accentColor:"var(--accent)"}}/>
+        <div style={{display:"flex",alignItems:"center",gap:4,fontSize:11}}>
+          <span style={{whiteSpace:"nowrap",color:"var(--taupe)"}}>Max €</span>
+          <input type="number" min={0} step={1} placeholder="∞" value={fPriceMax<500?fPriceMax:""} onChange={e=>{const v=e.target.value;setFPriceMax(v===""?500:Math.max(0,Number(v)));}} style={{width:60,padding:"3px 6px",border:"1px solid #ccc",borderRadius:4,fontSize:11,fontFamily:"inherit"}}/>
         </div>
         {filtersActive&&<button className="f-reset" onClick={resetFilters}>× Reset</button>}
         <span className="f-count">{L.labels(filtered.length)}</span>
