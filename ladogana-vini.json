@@ -9165,7 +9165,7 @@
   {
     "id": 1773148957336,
     "name": "Vin de Comptoir",
-    "producer": "Charles dufour",
+    "producer": "Charles Dufour",
     "category": "Champagne",
     "region": "Champagne",
     "vintage": "2021",
@@ -9180,7 +9180,9 @@
     "isNaturale": false,
     "isBiologico": false,
     "isBiodinamico": false,
-    "so2": false
+    "so2": false,
+    "markup": 200,
+    "showGlass": true
   },
   {
     "id": 1773148957337,
