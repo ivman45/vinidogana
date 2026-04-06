@@ -2233,7 +2233,7 @@
   {
     "id": 1773148956991,
     "name": "Champagne Rosé Grand Cru Brut",
-    "producer": "Marie - Noëlle ledru",
+    "producer": "Marie - Noëlle Ledru",
     "category": "Champagne",
     "region": "Champagne",
     "vintage": null,
@@ -2248,7 +2248,9 @@
     "isNaturale": false,
     "isBiologico": false,
     "isBiodinamico": false,
-    "so2": false
+    "so2": false,
+    "markup": 200,
+    "showGlass": true
   },
   {
     "id": 1773148956992,
