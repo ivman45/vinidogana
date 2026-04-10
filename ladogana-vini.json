@@ -9645,5 +9645,21 @@
     "markup": 200,
     "stock": 6,
     "id": 1775849145441
+  },
+  {
+    "name": "Millesime 2018",
+    "producer": "Justin Maillard",
+    "category": "Champagne",
+    "vintage": "2018",
+    "region": "Champagne",
+    "grapes": "Pinot Noir",
+    "notes": "",
+    "price": 85,
+    "priceByGlass": null,
+    "priceAsporto": 70,
+    "costPrice": 37.7,
+    "markup": 200,
+    "stock": 5,
+    "id": 1775849227684
   }
 ]
