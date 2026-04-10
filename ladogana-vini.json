@@ -9677,5 +9677,21 @@
     "markup": 200,
     "stock": 6,
     "id": 1775849490445
+  },
+  {
+    "name": "Nostrale",
+    "producer": "Longarico",
+    "category": "Bianco",
+    "vintage": "2024",
+    "region": "Sicilia",
+    "grapes": "Cataratto",
+    "notes": "",
+    "price": 32,
+    "priceByGlass": null,
+    "priceAsporto": 25,
+    "costPrice": 12.9,
+    "markup": 200,
+    "stock": 6,
+    "id": 1775849583078
   }
 ]
