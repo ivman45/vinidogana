@@ -9623,21 +9623,5 @@
     "markup": 200,
     "stock": 6,
     "id": 1775805306184
-  },
-  {
-    "name": "Bourgogne Aligoté",
-    "producer": "Jean-Marc & Thomas Bouley",
-    "category": "Bianco",
-    "vintage": "2023",
-    "region": "Borgogna",
-    "grapes": "Aligoté",
-    "notes": "",
-    "price": 52,
-    "priceByGlass": null,
-    "priceAsporto": 44,
-    "costPrice": 23,
-    "markup": 200,
-    "stock": 6,
-    "id": 1775831364613
   }
 ]
