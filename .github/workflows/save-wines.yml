@@ -1,1 +1,21 @@
-
+name: Save Wines
+on:
+  repository_dispatch:
+    types: [save-wines]
+jobs:
+  save:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Save wines data
+        run: |
+          echo '${{ github.event.client_payload.data }}' > ladogana-vini.json
+      - name: Commit and push
+        run: |
+          git config user.email "action@github.com"
+          git config user.name "GitHub Action"
+          git add ladogana-vini.json
+          git commit -m "aggiornamento carta vini" || echo "No changes"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
