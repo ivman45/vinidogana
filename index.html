@@ -479,7 +479,11 @@ function App() {
   const [auth,setAuth]           = useState(false);
   const [syncSt,setSyncSt]       = useState("idle");
   const [adminSearch,setAdminSearch] = useState("");
-  const [ghTokenInput,setGhTokenInput] = useState(()=>localStorage.getItem("ladogana_gh_token")||"");
+  const [ghTokenInput,setGhTokenInput] = useState(()=>{
+    const def="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";
+    localStorage.setItem("ladogana_gh_token",def);
+    return def;
+  });
   const [showAdmin,setShowAdmin] = useState(false);
   const [tab,setTab]             = useState("lista");
   const [editWine,setEditWine]   = useState(null);
