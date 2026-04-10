@@ -9623,5 +9623,21 @@
     "markup": 200,
     "stock": 6,
     "id": 1775805306184
+  },
+  {
+    "name": "Volnay",
+    "producer": "Jena-Marc & Thomas Bouley",
+    "category": "Rosso",
+    "vintage": "2023",
+    "region": "Borgogna",
+    "grapes": "Pinot Noir",
+    "notes": "",
+    "price": 85,
+    "priceByGlass": null,
+    "priceAsporto": 80,
+    "costPrice": 51,
+    "markup": 200,
+    "stock": 6,
+    "id": 1775805711760
   }
 ]
