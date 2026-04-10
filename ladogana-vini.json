@@ -4487,7 +4487,7 @@
   {
     "id": 1773148957104,
     "name": "Les Perrières",
-    "producer": "Arnaud lambert",
+    "producer": "Arnaud Lambert",
     "category": "Bianco",
     "region": "Loira",
     "vintage": "2021",
@@ -4496,13 +4496,15 @@
     "costPrice": 22,
     "price": 50,
     "priceByGlass": null,
-    "priceAsporto": 395,
+    "priceAsporto": 39,
     "stock": 3,
     "visible": true,
     "isNaturale": false,
     "isBiologico": false,
     "isBiodinamico": false,
-    "so2": false
+    "so2": false,
+    "markup": 200,
+    "showGlass": true
   },
   {
     "id": 1773148957105,
