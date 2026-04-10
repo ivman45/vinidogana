@@ -9537,7 +9537,7 @@
     "name": "Bourgogne Côte d'Or ",
     "producer": "Jean-Marc & Thomas Bouley",
     "category": "Bianco",
-    "vintage": "",
+    "vintage": "2023",
     "region": "Borgogna",
     "grapes": "Chardonnay",
     "notes": "",
@@ -9547,6 +9547,7 @@
     "costPrice": 29,
     "markup": 200,
     "stock": 6,
-    "id": 1775848308764
+    "id": 1775848308764,
+    "showGlass": true
   }
 ]
