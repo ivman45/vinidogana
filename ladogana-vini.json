@@ -94,21 +94,5 @@
     "costPrice": 15,
     "markup": 193,
     "stock": 4
-  },
-  {
-    "name": "DUBAND",
-    "producer": "DUBAND",
-    "category": "Bianco",
-    "vintage": "2023",
-    "region": "Borgogna",
-    "grapes": "CHARDONNAY",
-    "notes": "",
-    "price": 48.4,
-    "priceByGlass": null,
-    "priceAsporto": null,
-    "costPrice": 20,
-    "markup": 200,
-    "stock": null,
-    "id": 1775847645028
   }
 ]
