@@ -9661,5 +9661,21 @@
     "markup": 200,
     "stock": 5,
     "id": 1775849227684
+  },
+  {
+    "name": "Monferrato Rosso",
+    "producer": "Wolf",
+    "category": "Rosso",
+    "vintage": "2024",
+    "region": "Piemonte",
+    "grapes": " Nebbiolo, Barbera, Dolcetto, Grignolino ",
+    "notes": "",
+    "price": 44,
+    "priceByGlass": null,
+    "priceAsporto": 34,
+    "costPrice": 17.3,
+    "markup": 200,
+    "stock": 6,
+    "id": 1775849490445
   }
 ]
