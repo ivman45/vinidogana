@@ -9613,5 +9613,21 @@
     "markup": 200,
     "stock": null,
     "id": 1775848861373
+  },
+  {
+    "name": "Volnay Vieilles Vignes",
+    "producer": "Jean-Marc &Thomas Bouley",
+    "category": "Rosso",
+    "vintage": "2023",
+    "region": "Borgogna",
+    "grapes": "Pinot Noir",
+    "notes": "",
+    "price": 105,
+    "priceByGlass": null,
+    "priceAsporto": 94,
+    "costPrice": 62,
+    "markup": 200,
+    "stock": 6,
+    "id": 1775848960479
   }
 ]
