@@ -308,8 +308,9 @@ const saveLS   = (k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch{}};
 const loadLS   = k=>{try{const r=localStorage.getItem(k);return r?JSON.parse(r):null}catch{return null}};
 
 const GH_API = `https://api.github.com/repos/${CFG.GH_OWNER}/${CFG.GH_REPO}/contents/${CFG.GH_FILE}`;
-const ghToken = ()=>localStorage.getItem("ladogana_gh_token")||"";
-const ghHdrs = ()=>({"Authorization":`Bearer ${ghToken()}`,"Accept":"application/vnd.github+json","X-GitHub-Api-Version":"2022-11-28","Content-Type":"application/json"});
+const GH_TOKEN_DEFAULT = "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";
+const ghToken = ()=>localStorage.getItem("ladogana_gh_token")||GH_TOKEN_DEFAULT;
+const ghHdrs = ()=>({"Authorization":`Bearer ${GH_TOKEN_DEFAULT}`,"Accept":"application/vnd.github+json","X-GitHub-Api-Version":"2022-11-28","Content-Type":"application/json"});
 let _ghSha = null;
 const GH_RAW = `https://raw.githubusercontent.com/${CFG.GH_OWNER}/${CFG.GH_REPO}/main/${CFG.GH_FILE}`;
 const ghLoad = async()=>{
@@ -480,7 +481,7 @@ function App() {
   const [syncSt,setSyncSt]       = useState("idle");
   const [adminSearch,setAdminSearch] = useState("");
   const [ghTokenInput,setGhTokenInput] = useState(()=>{
-    const def="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";
+    const def="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";
     localStorage.setItem("ladogana_gh_token",def);
     return def;
   });
