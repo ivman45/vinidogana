@@ -110,5 +110,21 @@
     "markup": 200,
     "stock": null,
     "id": 1775847645028
+  },
+  {
+    "name": "duband",
+    "producer": "duband",
+    "category": "Bianco",
+    "vintage": "2023",
+    "region": "Borgogna",
+    "grapes": "pinot",
+    "notes": "",
+    "price": 66,
+    "priceByGlass": null,
+    "priceAsporto": null,
+    "costPrice": 30,
+    "markup": 200,
+    "stock": null,
+    "id": 1775847734291
   }
 ]
