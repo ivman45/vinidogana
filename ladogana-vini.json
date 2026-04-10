@@ -9747,21 +9747,5 @@
     "markup": 200,
     "stock": 6,
     "id": 1775849583078
-  },
-  {
-    "name": "aaa",
-    "producer": "aaa",
-    "category": "Bianco",
-    "vintage": "2022",
-    "region": "Piemonte",
-    "grapes": "aaa",
-    "notes": "",
-    "price": 27.5,
-    "priceByGlass": null,
-    "priceAsporto": null,
-    "costPrice": 10,
-    "markup": 200,
-    "stock": null,
-    "id": 1775859357045
   }
 ]
