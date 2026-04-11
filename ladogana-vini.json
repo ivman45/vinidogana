@@ -129,7 +129,7 @@
       "name": "Aglianico",
       "producer": "Archetipo",
       "category": "Rosso",
-      "region": "Campania",
+      "region": "Puglia",
       "vintage": "2020",
       "grapes": "Aglianico 100%",
       "notes": null,
@@ -142,7 +142,9 @@
       "isNaturale": false,
       "isBiologico": false,
       "isBiodinamico": false,
-      "so2": false
+      "so2": false,
+      "markup": 200,
+      "showGlass": true
     },
     {
       "id": 1773148956887,
