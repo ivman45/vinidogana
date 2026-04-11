@@ -9748,22 +9748,6 @@
       "markup": 200,
       "stock": 6,
       "id": 1775849583078
-    },
-    {
-      "name": "Cenin Vino bianco Veneto IGT",
-      "producer": "Tenuta dell'Arimoni",
-      "category": "Bianco",
-      "vintage": "2023",
-      "region": "Veneto",
-      "grapes": "Chenin Blanc",
-      "notes": "",
-      "price": 28,
-      "priceByGlass": null,
-      "priceAsporto": 19,
-      "costPrice": 9.9,
-      "markup": 200,
-      "stock": 9,
-      "id": 1775925754729
     }
   ],
   "producers": [
