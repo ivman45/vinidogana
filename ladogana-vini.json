@@ -9748,6 +9748,22 @@
       "markup": 200,
       "stock": 6,
       "id": 1775849583078
+    },
+    {
+      "name": "Chenin Vino bianco veneto IGT",
+      "producer": "Tenuta L'Armonia ",
+      "category": "Bianco",
+      "vintage": "2023",
+      "region": "Veneto",
+      "grapes": "Chenin Blanc",
+      "notes": "",
+      "price": 27.23,
+      "priceByGlass": null,
+      "priceAsporto": 19,
+      "costPrice": 9.9,
+      "markup": 200,
+      "stock": 9,
+      "id": 1775925607433
     }
   ],
   "producers": [
