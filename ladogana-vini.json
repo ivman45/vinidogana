@@ -129,7 +129,7 @@
       "name": "Aglianico",
       "producer": "Archetipo",
       "category": "Rosso",
-      "region": "Puglia",
+      "region": "Campania",
       "vintage": "2020",
       "grapes": "Aglianico 100%",
       "notes": null,
@@ -142,9 +142,7 @@
       "isNaturale": false,
       "isBiologico": false,
       "isBiodinamico": false,
-      "so2": false,
-      "markup": 200,
-      "showGlass": true
+      "so2": false
     },
     {
       "id": 1773148956887,
@@ -9798,8 +9796,8 @@
     {
       "id": 1775886835747.4685,
       "name": "Archetipo",
-      "region": "puglia",
-      "bio": "L'Archetipo è stata fondata da Francesco Valentino Dibenedetto\n, \ngià dagli anni '80 iniziò la conversione dell'azienda all'agricoltura biologica\n e \nnel 2000 passò alle pratiche biodinamiche\n. \nL'azienda è situata a Castellaneta, ai piedi della Murgia Barese in Puglia\n, con \ncirca 30 ettari coltivati a vite su 50 ettari totali di terreni\n. \nI vitigni coltivati includono Primitivo, Aglianico, Greco, Fiano, Susumaniello, Marchione e Maresco\n. \nLa vinificazione avviene con lieviti indigeni e il vino non viene stabilizzato, né filtrato né chiarificato\n. \nL'azienda pratica l'agricoltura sinergica ispirata a Masanobu Fukuoka\n, che rappresenta un'evoluzione oltre il biologico e il biodinamico verso il non-interventismo totale.",
+      "region": "Campania",
+      "bio": "",
       "website": ""
     },
     {
@@ -9813,7 +9811,7 @@
       "id": 1775886835747.3894,
       "name": "Longarico",
       "region": "Sicilia",
-      "bio": "Longarico è stata fondata nel 2015 dai cugini Sergio e Luigi Stalteri con la consulenza dell'enologo Alessandro Viola\n. \nL'azienda si trova ad Alcamo (provincia di Trapani), in contrada Fastuchera, situata a oltre 350 metri sul livello del mare tra il monte Bonifato e la riserva naturale \"Bosco d'Alcamo\"\n. \nLa cantina dispone di circa 4 ettari di vigneti\n coltivati inizialmente a \nCatarratto e successivamente estesi a Syrah e Nerello Mascalese\n. \nIl metodo di vinificazione segue principi biologici con terreni lavorati senza additivi chimici, fermentazioni spontanee con lieviti indigeni e nessuna chiarificazione o filtrazione\n. \nL'azienda adotta pratiche di agricoltura biologica\n, anche se non è stata trovata documentazione specifica riguardo certificazioni biologiche o biodinamiche ufficiali.",
+      "bio": "",
       "website": ""
     },
     {
