@@ -9748,6 +9748,22 @@
       "markup": 200,
       "stock": 6,
       "id": 1775849583078
+    },
+    {
+      "name": "chen",
+      "producer": "pendin",
+      "category": "Bianco",
+      "vintage": "",
+      "region": "Veneto",
+      "grapes": "chenin",
+      "notes": "",
+      "price": 29,
+      "priceByGlass": null,
+      "priceAsporto": null,
+      "costPrice": 9.9,
+      "markup": 200,
+      "stock": 9,
+      "id": 1775926487346
     }
   ],
   "producers": [
