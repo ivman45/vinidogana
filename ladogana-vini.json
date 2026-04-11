@@ -9750,20 +9750,21 @@
       "id": 1775849583078
     },
     {
-      "name": "chen",
-      "producer": "pendin",
+      "name": "Vino bianco Veneto IGT",
+      "producer": "Tenuta dell'Armonia",
       "category": "Bianco",
-      "vintage": "",
+      "vintage": "2023",
       "region": "Veneto",
-      "grapes": "chenin",
+      "grapes": "Chenin blanc",
       "notes": "",
-      "price": 29,
+      "price": 28,
       "priceByGlass": null,
-      "priceAsporto": null,
+      "priceAsporto": 19,
       "costPrice": 9.9,
       "markup": 200,
       "stock": 9,
-      "id": 1775926487346
+      "id": 1775926487346,
+      "showGlass": true
     }
   ],
   "producers": [
