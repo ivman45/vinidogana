@@ -2764,14 +2764,12 @@
       "price": 36,
       "priceByGlass": null,
       "priceAsporto": 28,
-      "stock": 15,
+      "stock": 16,
       "visible": true,
       "isNaturale": false,
       "isBiologico": false,
       "isBiodinamico": false,
-      "so2": false,
-      "markup": 200,
-      "showGlass": true
+      "so2": false
     },
     {
       "id": 1773148957018,
@@ -3814,12 +3812,14 @@
       "price": 49,
       "priceByGlass": null,
       "priceAsporto": 38,
-      "stock": 7,
+      "stock": 6,
       "visible": true,
       "isNaturale": false,
       "isBiologico": false,
       "isBiodinamico": false,
-      "so2": false
+      "so2": false,
+      "markup": 200,
+      "showGlass": true
     },
     {
       "id": 1773148957071,
@@ -4786,14 +4786,12 @@
       "price": 59,
       "priceByGlass": null,
       "priceAsporto": 52,
-      "stock": 1,
+      "stock": 2,
       "visible": true,
       "isNaturale": false,
       "isBiologico": false,
       "isBiodinamico": false,
-      "so2": false,
-      "markup": 200,
-      "showGlass": true
+      "so2": false
     },
     {
       "id": 1773148957119,
@@ -8870,7 +8868,7 @@
       "price": 35,
       "priceByGlass": null,
       "priceAsporto": 27,
-      "stock": 43,
+      "stock": 45,
       "visible": true,
       "isNaturale": false,
       "isBiologico": false,
