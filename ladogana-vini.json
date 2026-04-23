@@ -5297,7 +5297,9 @@
       "isNaturale": false,
       "isBiologico": false,
       "isBiodinamico": false,
-      "so2": false
+      "so2": false,
+      "markup": 200,
+      "showGlass": true
     },
     {
       "id": 1773148957144,
