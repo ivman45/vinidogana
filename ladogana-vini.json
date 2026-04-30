@@ -9822,6 +9822,22 @@
       "markup": 200,
       "stock": 6,
       "id": 1777581294419
+    },
+    {
+      "name": "Ribolla Fialla di Rosazzo ",
+      "producer": "Ronco delle Betulle",
+      "category": "Bianco",
+      "vintage": "2024",
+      "region": "Friuli-Venezia Giulia",
+      "grapes": "Ribolla Gialla",
+      "notes": "",
+      "price": 27,
+      "priceByGlass": null,
+      "priceAsporto": 20,
+      "costPrice": 10.9,
+      "markup": 200,
+      "stock": 12,
+      "id": 1777581382342
     }
   ],
   "producers": [
