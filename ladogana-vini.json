@@ -9838,6 +9838,22 @@
       "markup": 200,
       "stock": 12,
       "id": 1777581382342
+    },
+    {
+      "name": "Merlot Bio IGT Venezia Giulia",
+      "producer": "Ronco delle Betulle",
+      "category": "Rosso",
+      "vintage": "2022",
+      "region": "Friuli-Venezia Giulia",
+      "grapes": "Merlot",
+      "notes": "",
+      "price": 28,
+      "priceByGlass": null,
+      "priceAsporto": 21,
+      "costPrice": 11.5,
+      "markup": 200,
+      "stock": 12,
+      "id": 1777581467834
     }
   ],
   "producers": [
