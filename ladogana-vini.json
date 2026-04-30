@@ -3564,16 +3564,18 @@
       "vintage": "2021",
       "grapes": "Friulano 100%",
       "notes": null,
-      "costPrice": 8.9,
-      "price": 24,
+      "costPrice": 10.9,
+      "price": 27,
       "priceByGlass": null,
-      "priceAsporto": 18,
-      "stock": 5,
+      "priceAsporto": 20,
+      "stock": 35,
       "visible": true,
       "isNaturale": false,
       "isBiologico": false,
       "isBiodinamico": false,
-      "so2": false
+      "so2": false,
+      "markup": 200,
+      "showGlass": true
     },
     {
       "id": 1773148957058,
