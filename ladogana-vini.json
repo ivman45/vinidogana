@@ -9806,6 +9806,22 @@
       "stock": 8,
       "id": 1775926487346,
       "showGlass": true
+    },
+    {
+      "name": "Sauvignon Bocois IGT Venezia Giulia",
+      "producer": "Ronco delle Betulle",
+      "category": "Bianco",
+      "vintage": "2024",
+      "region": "Friuli-Venezia Giulia",
+      "grapes": "Sauvignon",
+      "notes": "",
+      "price": 27,
+      "priceByGlass": null,
+      "priceAsporto": 20,
+      "costPrice": 10.9,
+      "markup": 200,
+      "stock": 6,
+      "id": 1777581294419
     }
   ],
   "producers": [
