@@ -9716,8 +9716,9 @@
       "priceAsporto": 94,
       "costPrice": 62,
       "markup": 200,
-      "stock": 6,
-      "id": 1775848960479
+      "stock": 5,
+      "id": 1775848960479,
+      "showGlass": true
     },
     {
       "name": "Blanc de Blancs",
