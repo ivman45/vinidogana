@@ -4425,7 +4425,7 @@
       "priceByGlass": null,
       "priceAsporto": 23,
       "stock": 0,
-      "visible": true,
+      "visible": false,
       "isNaturale": false,
       "isBiologico": false,
       "isBiodinamico": false,
