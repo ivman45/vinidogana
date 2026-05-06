@@ -9633,8 +9633,9 @@
       "priceAsporto": 44,
       "costPrice": 23,
       "markup": 200,
-      "stock": 6,
-      "id": 1775848131104
+      "stock": 5,
+      "id": 1775848131104,
+      "showGlass": true
     },
     {
       "name": "Bourgogne Côte d'Or ",
